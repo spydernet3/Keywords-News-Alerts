@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Keyword Alerts</title>
+<title>Keywords Alert</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -213,6 +213,53 @@ mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0
 .empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
 .empty .ico { font-size: 40px; margin-bottom: 12px; }
 
+/* AUTO-REFRESH */
+.auto-refresh-wrap { position: relative; display: inline-flex; align-items: center; }
+.btn-autorefresh {
+  height: 42px; padding: 0 16px; border-radius: 8px;
+  border: 1.5px solid #22c55e; background: #fff;
+  color: #15803d; font-size: 13px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 7px;
+  transition: background 0.15s;
+}
+.btn-autorefresh:hover { background: #f0fdf4; }
+.btn-autorefresh.active { background: #22c55e; color: #fff; border-color: #16a34a; }
+.btn-autorefresh .ar-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #86efac; flex-shrink: 0;
+}
+.btn-autorefresh.active .ar-dot {
+  background: #fff;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.4; transform:scale(0.7); }
+}
+.ar-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  background: #fff; border: 1.5px solid #d1fae5;
+  border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  min-width: 165px; z-index: 50; overflow: hidden; display: none;
+}
+.ar-dropdown.open { display: block; }
+.ar-dropdown-title {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  padding: 10px 14px 6px;
+}
+.ar-option {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; font-size: 13px; font-weight: 600;
+  cursor: pointer; color: var(--text); transition: background 0.1s;
+}
+.ar-option:hover { background: #f0fdf4; }
+.ar-option.selected { color: #15803d; background: #dcfce7; }
+.ar-option .ar-check { margin-left: auto; font-size: 14px; }
+.ar-countdown {
+  font-size: 11px; color: #15803d; font-weight: 700;
+  background: #dcfce7; border-radius: 6px; padding: 2px 7px; margin-left: 2px;
+}
+
 /* TOAST */
 #toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -234,7 +281,7 @@ mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0
 <body>
 
 <div class="topbar">
-  <h1>🔔 Keyword Latest Alerts</h1>
+  <h1>🔔 Keywords Alert</h1>
   <small>Powered By SpyderNet</small>
 </div>
 
@@ -252,8 +299,27 @@ mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0
 
   <!-- ACTIONS BAR -->
   <div class="actions-bar" id="actionsBar" style="display:none">
-    <button class="btn btn-blue" id="refreshAllBtn">↻ Refresh All</button>
-    <button class="btn btn-ghost" id="clearAllBtn">✕ Clear All</button>
+    <button class="btn btn-blue" id="refreshAllBtn">&#8635; Refresh All</button>
+    <button class="btn btn-ghost" id="clearAllBtn">&#10005; Clear All</button>
+
+    <!-- AUTO-REFRESH BUTTON + DROPDOWN -->
+    <div class="auto-refresh-wrap" id="arWrap">
+      <button class="btn-autorefresh" id="arBtn">
+        <span class="ar-dot"></span>
+        <span id="arLabel">Auto Refresh</span>
+        <span id="arCountdown" class="ar-countdown" style="display:none"></span>
+        &#9662;
+      </button>
+      <div class="ar-dropdown" id="arDropdown">
+        <div class="ar-dropdown-title">Refresh Interval</div>
+        <div class="ar-option" data-interval="0"><span>Off</span><span class="ar-check" id="arCheck-0">&#10003;</span></div>
+        <div class="ar-option" data-interval="30"><span>Every 30 sec</span><span class="ar-check" id="arCheck-30"></span></div>
+        <div class="ar-option" data-interval="60"><span>Every 1 min</span><span class="ar-check" id="arCheck-60"></span></div>
+        <div class="ar-option" data-interval="300"><span>Every 5 min</span><span class="ar-check" id="arCheck-300"></span></div>
+        <div class="ar-option" data-interval="600"><span>Every 10 min</span><span class="ar-check" id="arCheck-600"></span></div>
+      </div>
+    </div>
+
     <span class="last-refresh" id="lastRefresh"></span>
   </div>
 
@@ -283,7 +349,7 @@ mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0
 //  Only "↻ Refresh" calls the server.
 // =============================================================
 
-var PAGE = 8;
+var PAGE = 6;
 
 var S = {
   keywords:   [],
@@ -304,8 +370,14 @@ function todayISO() {
 // ── INIT ──────────────────────────────────────────────────────
 window.onload = function() {
   google.script.run
-    .withSuccessHandler(function(kws) { S.keywords = kws || []; render(); })
-    .withFailureHandler(function()    { render(); })
+    .withSuccessHandler(function(kws) {
+      S.keywords = kws || [];
+      render();
+      // Restore saved auto-refresh interval after page load
+      var saved = parseInt(localStorage.getItem('ar_interval') || '0', 10);
+      if (saved > 0) setAutoRefresh(saved);
+    })
+    .withFailureHandler(function() { render(); })
     .loadKeywords();
 };
 
@@ -314,6 +386,75 @@ document.getElementById('addBtn').onclick       = addKeyword;
 document.getElementById('refreshAllBtn').onclick = refreshAll;
 document.getElementById('clearAllBtn').onclick   = clearAll;
 document.getElementById('kwInput').onkeydown     = function(e){ if(e.key==='Enter') addKeyword(); };
+
+// AUTO-REFRESH STATE
+var AR = { intervalSec:0, timerId:null, counterId:null, remaining:0 };
+
+document.getElementById('arBtn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  document.getElementById('arDropdown').classList.toggle('open');
+});
+document.addEventListener('click', function() {
+  document.getElementById('arDropdown').classList.remove('open');
+});
+document.getElementById('arDropdown').addEventListener('click', function(e) {
+  var opt = e.target.closest('[data-interval]');
+  if (!opt) return;
+  e.stopPropagation();
+  setAutoRefresh(parseInt(opt.getAttribute('data-interval'), 10));
+  document.getElementById('arDropdown').classList.remove('open');
+});
+
+function setAutoRefresh(secs) {
+  if (AR.timerId)   { clearInterval(AR.timerId);   AR.timerId   = null; }
+  if (AR.counterId) { clearInterval(AR.counterId); AR.counterId = null; }
+  AR.intervalSec = secs;
+  localStorage.setItem('ar_interval', secs); // persist across page refreshes
+
+  [0,30,60,300,600].forEach(function(v) {
+    var el  = document.getElementById('arCheck-' + v);
+    if (el) el.textContent = (v === secs) ? '✓' : '';
+    var row = document.querySelector('[data-interval="' + v + '"]');
+    if (row) row.classList.toggle('selected', v === secs);
+  });
+
+  var btn       = document.getElementById('arBtn');
+  var label     = document.getElementById('arLabel');
+  var countdown = document.getElementById('arCountdown');
+
+  if (secs === 0) {
+    btn.classList.remove('active');
+    label.textContent = 'Auto Refresh';
+    countdown.style.display = 'none';
+    showToast('Auto refresh turned off');
+    return;
+  }
+
+  btn.classList.add('active');
+  label.textContent = 'Auto';
+  countdown.style.display = 'inline';
+  AR.remaining = secs;
+  countdown.textContent = fmtSec(secs);
+
+  AR.counterId = setInterval(function() {
+    AR.remaining--;
+    if (AR.remaining <= 0) AR.remaining = secs;
+    countdown.textContent = fmtSec(AR.remaining);
+  }, 1000);
+
+  AR.timerId = setInterval(function() {
+    AR.remaining = secs;
+    refreshAll();
+  }, secs * 1000);
+
+  var lbls = {30:'30s', 60:'1 min', 300:'5 min', 600:'10 min'};
+  showToast('Auto refresh every ' + (lbls[secs] || secs+'s') + ' — all topics');
+}
+
+function fmtSec(s) {
+  if (s >= 60) { var m=Math.floor(s/60), r=s%60; return m+'m'+(r>0?' '+r+'s':''); }
+  return s+'s';
+}
 
 // Delegated click — handles both filter buttons and refresh button
 document.getElementById('grid').addEventListener('click', function(e) {
