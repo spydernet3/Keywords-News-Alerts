@@ -1,5 +1,5 @@
 // ============================================================
-//  KEYWORD ALERTS — Google Apps Script
+//  KEYWORDS ALERT — Google Apps Script
 //  File: Code.gs
 // ============================================================
 
@@ -7,7 +7,7 @@ const FETCH_LIMIT = 400;
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('Keyword Alerts')
+    .setTitle('Keywords Alert')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
