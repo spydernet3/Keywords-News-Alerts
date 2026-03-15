@@ -1,224 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Keyword Alerts</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg:         #f5f6fa;
-    --surface:    #ffffff;
-    --border:     #e3e6ef;
-    --accent:     #4A86E8;
-    --accent2:    #1a56c4;
-    --text:       #1a1d2e;
-    --muted:      #6b7280;
-    --success:    #16a34a;
-    --success-bg: #dcfce7;
-    --danger:     #dc2626;
-    --radius:     10px;
-    --shadow:     0 2px 12px rgba(74,134,232,0.07);
-  }
+:root {
+  --bg:      #f0f2f8;
+  --surface: #ffffff;
+  --border:  #dde1ef;
+  --accent:  #4A86E8;
+  --accent2: #1a56c4;
+  --text:    #1a1d2e;
+  --muted:   #6b7280;
+  --green:   #16a34a;
+  --greenbg: #dcfce7;
+  --red:     #dc2626;
+  --yellow:  #fef08a;
+  --radius:  10px;
+  --shadow:  0 2px 14px rgba(74,134,232,0.09);
+}
 
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  .topbar {
-    background: var(--accent); color: #fff;
-    padding: 0 24px; height: 54px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 10;
-    box-shadow: 0 2px 8px rgba(74,134,232,0.18);
-  }
-  .topbar h1 { font-size: 17px; font-weight: 600; letter-spacing: 0.02em; }
-  .topbar span { font-size: 12px; opacity: 0.8; }
+/* TOPBAR */
+.topbar {
+  background: var(--accent); color: #fff;
+  padding: 0 24px; height: 54px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+  box-shadow: 0 2px 10px rgba(74,134,232,0.25);
+}
+.topbar h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.02em; }
+.topbar small { font-size: 12px; opacity: 0.8; }
 
-  .container { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+.container { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
 
-  .add-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px 24px;
-    margin-bottom: 24px; box-shadow: var(--shadow);
-  }
-  .add-card label {
-    font-size: 13px; font-weight: 600; color: var(--muted);
-    display: block; margin-bottom: 8px;
-    text-transform: uppercase; letter-spacing: 0.06em;
-  }
-  .add-row { display: flex; gap: 10px; }
-  .add-row input {
-    flex: 1; height: 40px; padding: 0 14px;
-    border: 1.5px solid var(--border); border-radius: 8px;
-    font-size: 14px; color: var(--text); outline: none;
-    transition: border-color 0.15s; background: var(--bg);
-  }
-  .add-row input:focus { border-color: var(--accent); background: #fff; }
-  .add-row input::placeholder { color: #b0b7c3; }
+/* ADD CARD */
+.add-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 20px; box-shadow: var(--shadow);
+}
+.add-card label {
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  display: block; margin-bottom: 8px;
+}
+.add-row { display: flex; gap: 10px; }
+.add-row input {
+  flex: 1; height: 42px; padding: 0 14px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: 14px; outline: none; background: var(--bg);
+  transition: border-color 0.15s;
+}
+.add-row input:focus { border-color: var(--accent); background: #fff; }
+.add-row input::placeholder { color: #b0b7c3; }
 
-  .btn {
-    height: 40px; padding: 0 18px; border-radius: 8px; border: none;
-    font-size: 13px; font-weight: 600; cursor: pointer;
-    transition: background 0.15s, transform 0.08s; white-space: nowrap;
-  }
-  .btn:active { transform: scale(0.97); }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: var(--accent2); }
-  .btn-outline { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
-  .btn-outline:hover { background: #eef3fd; }
-  .btn-sm { height: 30px; padding: 0 12px; font-size: 12px; }
+/* BUTTONS */
+.btn {
+  height: 42px; padding: 0 20px; border-radius: 8px; border: none;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background 0.15s, transform 0.08s; white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn-blue  { background: var(--accent); color: #fff; }
+.btn-blue:hover  { background: var(--accent2); }
+.btn-ghost { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
+.btn-ghost:hover { background: #eef3fd; }
+.btn-sm { height: 30px; padding: 0 12px; font-size: 12px; border-radius: 6px; }
 
-  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-  .pill {
-    display: flex; align-items: center; gap: 6px;
-    padding: 5px 12px 5px 14px; border-radius: 20px;
-    background: #eef3fd; border: 1px solid #c7d9f9;
-    font-size: 13px; color: var(--accent2); font-weight: 500;
-  }
-  .pill-remove {
-    background: none; border: none; cursor: pointer;
-    color: #93a8d6; font-size: 15px; line-height: 1; padding: 0;
-    display: flex; align-items: center;
-  }
-  .pill-remove:hover { color: var(--danger); }
+/* PILLS */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 10px 5px 14px; border-radius: 20px;
+  background: #eef3fd; border: 1px solid #c7d9f9;
+  font-size: 13px; color: var(--accent2); font-weight: 600;
+}
+.pill-x {
+  background: none; border: none; cursor: pointer;
+  color: #93a8d6; font-size: 16px; line-height: 1;
+  display: flex; align-items: center; padding: 0;
+}
+.pill-x:hover { color: var(--red); }
 
-  .actions-bar {
-    display: flex; gap: 10px; align-items: center;
-    margin-bottom: 24px; flex-wrap: wrap;
-  }
-  .last-refreshed { font-size: 12px; color: var(--muted); margin-left: auto; }
+/* ACTIONS */
+.actions-bar {
+  display: flex; gap: 10px; align-items: center;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.last-refresh { font-size: 12px; color: var(--muted); margin-left: auto; }
 
-  #resultsContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    gap: 20px;
-    align-items: start;
-  }
+/* GRID */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 20px; align-items: start;
+}
 
-  .results-block { margin-bottom: 0; }
+/* CARD WRAPPER */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
 
-  .kw-header {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 12px; flex-wrap: wrap;
-  }
-  .kw-badge {
-    font-size: 13px; font-weight: 700;
-    background: var(--accent); color: #fff;
-    padding: 4px 14px; border-radius: 20px;
-  }
-  .kw-count { font-size: 12px; color: var(--muted); }
-  .kw-page {
-    font-size: 11px; color: var(--accent2);
-    background: #eef3fd; border: 1px solid #c7d9f9;
-    padding: 2px 8px; border-radius: 10px;
-  }
-  .kw-time { font-size: 11px; color: var(--muted); }
-  .kw-refresh { margin-left: auto; }
+/* CARD TOP — keyword badge + refresh */
+.card-top {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 16px 0 16px; flex-wrap: wrap;
+}
+.kw-badge {
+  font-size: 13px; font-weight: 800;
+  background: var(--accent); color: #fff;
+  padding: 4px 14px; border-radius: 20px;
+}
+.kw-count {
+  font-size: 11px; color: var(--accent2);
+  background: #eef3fd; border: 1px solid #c7d9f9;
+  padding: 2px 8px; border-radius: 10px; font-weight: 600;
+}
+.exact-tag {
+  font-size: 10px; font-weight: 700;
+  background: #fef9c3; color: #854d0e;
+  border: 1px solid #fde68a;
+  padding: 2px 7px; border-radius: 10px;
+}
+.card-refresh { margin-left: auto; }
 
-  .news-list {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
-  }
-  .news-item {
-    padding: 14px 18px; border-bottom: 1px solid var(--border);
-    display: grid; grid-template-columns: 1fr auto;
-    gap: 8px 14px; align-items: start; transition: background 0.12s;
-  }
-  .news-item:last-child { border-bottom: none; }
-  .news-item:hover { background: #f9faff; }
-  .news-meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; grid-column: 1; }
-  .news-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.45; grid-column: 1; }
-  .badge-new {
-    font-size: 10px; font-weight: 700;
-    background: var(--success-bg); color: var(--success);
-    padding: 1px 7px; border-radius: 10px;
-    display: inline-block; margin-left: 6px; vertical-align: middle;
-  }
-  .news-link { grid-column: 2; grid-row: 1 / 3; align-self: center; }
-  .news-link a {
-    display: inline-block; padding: 5px 12px;
-    background: #eef3fd; color: var(--accent2);
-    border-radius: 6px; font-size: 12px; font-weight: 600;
-    text-decoration: none; white-space: nowrap; transition: background 0.12s;
-  }
-  .news-link a:hover { background: #dce8fb; }
+/* =====================================================
+   FILTER BUTTONS — two big toggle buttons per card
+   ===================================================== */
+.filter-bar {
+  display: flex;
+  gap: 0;
+  margin: 12px 16px 14px 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--accent);
+  width: 100%;
+}
+.filter-bar button {
+  flex: 1;
+  height: 36px;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  background: #fff;
+  color: var(--accent);
+  border-right: 1px solid var(--accent);
+  letter-spacing: 0.01em;
+}
+.filter-bar button:last-child { border-right: none; }
+.filter-bar button.active {
+  background: var(--accent);
+  color: #fff;
+}
+.filter-bar button:not(.active):hover {
+  background: #dce8fb;
+}
+/* ===================================================== */
 
-  /* refresh footer inside card */
-  .card-footer {
-    padding: 10px 18px;
-    border-top: 1px solid var(--border);
-    background: #fafbff;
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 12px; color: var(--muted);
-  }
+/* ARTICLES */
+.articles { border-top: 1px solid var(--border); }
+.article {
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 6px 12px; align-items: start;
+  transition: background 0.1s;
+}
+.article:last-child { border-bottom: none; }
+.article:hover { background: #f6f8ff; }
+.art-meta { font-size: 11px; color: var(--muted); grid-column: 1; }
+.art-title { font-size: 13px; font-weight: 600; line-height: 1.45; grid-column: 1; color: var(--text); }
+.badge-latest {
+  font-size: 10px; font-weight: 700;
+  background: var(--greenbg); color: var(--green);
+  padding: 1px 7px; border-radius: 10px;
+  display: inline-block; margin-left: 6px; vertical-align: middle;
+}
+.art-link { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+.art-link a {
+  display: inline-block; padding: 5px 11px;
+  background: #eef3fd; color: var(--accent2);
+  border-radius: 6px; font-size: 12px; font-weight: 700;
+  text-decoration: none; white-space: nowrap;
+  transition: background 0.12s;
+}
+.art-link a:hover { background: #dce8fb; }
+mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0 1px; }
 
-  .loading-row {
-    padding: 20px 18px; color: var(--muted); font-size: 13px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .spinner {
-    width: 18px; height: 18px;
-    border: 2px solid #dce8fb; border-top-color: var(--accent);
-    border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* CARD FOOTER */
+.card-foot {
+  padding: 9px 16px; border-top: 1px solid var(--border);
+  background: #f8f9ff;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; color: var(--muted);
+}
 
-  .empty-state { text-align: center; padding: 52px 20px; color: var(--muted); font-size: 14px; }
-  .empty-state .icon { font-size: 36px; margin-bottom: 10px; }
-  .error-msg { padding: 14px 18px; color: var(--danger); font-size: 13px; background: #fff5f5; }
-  .no-kw-msg { padding: 14px 18px; color: var(--muted); font-size: 13px; }
+/* STATES */
+.msg { padding: 18px 16px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.msg-err { padding: 14px 16px; font-size: 13px; color: var(--red); background: #fff5f5; }
+.spin-row { padding: 20px 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+.spin {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border: 2px solid #dce8fb; border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  #toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: #1a1d2e; color: #fff; padding: 10px 22px; border-radius: 8px;
-    font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.25s;
-    pointer-events: none; z-index: 100;
-  }
-  #toast.show { opacity: 1; }
+.empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
+.empty .ico { font-size: 40px; margin-bottom: 12px; }
 
-  @media (max-width: 560px) {
-    .topbar h1 { font-size: 15px; }
-    .news-item { grid-template-columns: 1fr; }
-    .news-link { grid-column: 1; grid-row: auto; }
-    .actions-bar { flex-direction: column; align-items: flex-start; }
-    .last-refreshed { margin-left: 0; }
-    #resultsContainer { grid-template-columns: 1fr; }
-  }
+/* TOAST */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: #1a1d2e; color: #fff; padding: 10px 22px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.25s;
+  pointer-events: none; z-index: 999;
+}
+#toast.show { opacity: 1; }
+
+@media (max-width: 560px) {
+  .article { grid-template-columns: 1fr; }
+  .art-link { grid-column: 1; grid-row: auto; }
+  .actions-bar { flex-direction: column; align-items: flex-start; }
+  .last-refresh { margin-left: 0; }
+  #grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <h1>🔔 Keyword Alerts</h1>
-  <span>Today's news only · Google News RSS</span>
+  <h1>🔔 Keyword Latest Alerts</h1>
+  <small>Powered By SpyderNet</small>
 </div>
 
 <div class="container">
 
+  <!-- ADD KEYWORD -->
   <div class="add-card">
-    <label>Track a keyword or topic</label>
+    <label>Add a keyword or topic to track</label>
     <div class="add-row">
-      <input id="kwInput" type="text" placeholder='e.g. "Tamil Nadu news", Bitcoin, AI regulation' />
-      <button class="btn btn-primary" id="addBtn">+ Add</button>
+      <input id="kwInput" type="text" placeholder='e.g. Realme P4, Bitcoin, AI regulation, Tamil Nadu' />
+      <button class="btn btn-blue" id="addBtn">+ Add</button>
     </div>
     <div class="pills" id="pills"></div>
   </div>
 
+  <!-- ACTIONS BAR -->
   <div class="actions-bar" id="actionsBar" style="display:none">
-    <button class="btn btn-primary" id="refreshAllBtn">↻ Refresh All</button>
-    <button class="btn btn-outline" id="clearAllBtn">✕ Clear All</button>
-    <span class="last-refreshed" id="lastRefreshed"></span>
+    <button class="btn btn-blue" id="refreshAllBtn">↻ Refresh All</button>
+    <button class="btn btn-ghost" id="clearAllBtn">✕ Clear All</button>
+    <span class="last-refresh" id="lastRefresh"></span>
   </div>
 
-  <div id="resultsContainer">
-    <div class="empty-state">
-      <div class="icon">🔍</div>
-      <div>Add a keyword above to start tracking today's news</div>
+  <!-- RESULTS GRID -->
+  <div id="grid">
+    <div class="empty">
+      <div class="ico">🔍</div>
+      <div>Add a keyword above to start tracking news</div>
     </div>
   </div>
 
@@ -227,254 +270,343 @@
 <div id="toast"></div>
 
 <script>
-var PAGE_SIZE = 8;
+// =============================================================
+//  STATE
+//  rawPool[kw]    = all articles returned by server (any date)
+//  pool[kw]       = articles after exact-match + date filter
+//  timeFilter[kw] = 'today' | 'anytime'
+//  offset[kw]     = current page start index
+//
+//  IMPORTANT:
+//  Clicking "⚡ As it Happens" or "🗓 Anytime" does NOT call
+//  the server — it just re-filters rawPool instantly.
+//  Only "↻ Refresh" calls the server.
+// =============================================================
 
-// STATE: per keyword we store pool (all fetched articles), offset (current page start)
-var STATE = { keywords: [], pool: {}, offset: {}, loading: {} };
+var PAGE = 8;
 
-// ── INIT ───────────────────────────────────────────────────────
-window.onload = function () {
+var S = {
+  keywords:   [],
+  rawPool:    {},   // server data, untouched
+  pool:       {},   // filtered view
+  offset:     {},
+  loading:    {},
+  timeFilter: {}    // 'today' | 'anytime'
+};
+
+function todayISO() {
+  var d = new Date();
+  return d.getFullYear() + '-'
+    + String(d.getMonth()+1).padStart(2,'0') + '-'
+    + String(d.getDate()).padStart(2,'0');
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+window.onload = function() {
   google.script.run
-    .withSuccessHandler(function(kws) { STATE.keywords = kws || []; render(); })
-    .withFailureHandler(function() { render(); })
+    .withSuccessHandler(function(kws) { S.keywords = kws || []; render(); })
+    .withFailureHandler(function()    { render(); })
     .loadKeywords();
 };
 
-// ── STATIC LISTENERS ──────────────────────────────────────────
-document.getElementById('addBtn').addEventListener('click', addKeyword);
-document.getElementById('refreshAllBtn').addEventListener('click', refreshAll);
-document.getElementById('clearAllBtn').addEventListener('click', clearAll);
-document.getElementById('kwInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') addKeyword();
+// ── LISTENERS ─────────────────────────────────────────────────
+document.getElementById('addBtn').onclick       = addKeyword;
+document.getElementById('refreshAllBtn').onclick = refreshAll;
+document.getElementById('clearAllBtn').onclick   = clearAll;
+document.getElementById('kwInput').onkeydown     = function(e){ if(e.key==='Enter') addKeyword(); };
+
+// Delegated click — handles both filter buttons and refresh button
+document.getElementById('grid').addEventListener('click', function(e) {
+  // Filter button clicked?
+  var fb = e.target.closest('[data-filter-kw]');
+  if (fb) {
+    onFilterClick(fb.getAttribute('data-filter-kw'), fb.getAttribute('data-filter-val'));
+    return;
+  }
+  // Refresh button clicked?
+  var rb = e.target.closest('[data-refresh-kw]');
+  if (rb) {
+    onRefreshClick(rb.getAttribute('data-refresh-kw'));
+  }
 });
 
-// ── DELEGATED LISTENERS ───────────────────────────────────────
-document.getElementById('resultsContainer').addEventListener('click', function(e) {
-  var btn = e.target.closest('[data-refresh-kw]');
-  if (btn) handleRefreshClick(btn.getAttribute('data-refresh-kw'));
-});
 document.getElementById('pills').addEventListener('click', function(e) {
-  var btn = e.target.closest('[data-remove-kw]');
-  if (btn) removeKeyword(btn.getAttribute('data-remove-kw'));
+  var b = e.target.closest('[data-remove-kw]');
+  if (b) removeKeyword(b.getAttribute('data-remove-kw'));
 });
 
-// ── REFRESH LOGIC ─────────────────────────────────────────────
-// On each refresh click:
-//   - If pool has more unseen articles → show next 8 (no server call)
-//   - If pool exhausted → re-fetch from server and restart from top
-function handleRefreshClick(kw) {
-  var pool   = STATE.pool[kw]   || [];
-  var offset = STATE.offset[kw] || 0;
-  var next   = offset + PAGE_SIZE;
+// ── FILTER BUTTON CLICK ───────────────────────────────────────
+// NO server call — just re-filter the existing rawPool
+function onFilterClick(kw, val) {
+  if (S.timeFilter[kw] === val) return; // already active
+  S.timeFilter[kw] = val;
+  S.offset[kw]     = 0;
+  applyFilter(kw);            // re-filter rawPool
+  renderCard(kw);
+  showToast(val === 'today' ? '⚡ Showing today\'s news only' : '🗓 Showing all available news');
+}
 
-  if (next < pool.length) {
-    // Still articles left in pool — advance the page
-    STATE.offset[kw] = next;
-    renderKeywordBlock(kw);
-    showToast('Showing articles ' + (next + 1) + '–' + Math.min(next + PAGE_SIZE, pool.length));
+// ── APPLY FILTER ─────────────────────────────────────────────
+// Takes rawPool[kw], applies exact word-boundary match + date filter → pool[kw]
+function applyFilter(kw) {
+  var raw    = S.rawPool[kw];
+  var filter = S.timeFilter[kw] || 'today';
+
+  // If raw is an error/no-results object, pass through as-is
+  if (!raw || !Array.isArray(raw)) {
+    S.pool[kw] = raw;
+    return;
+  }
+
+  var kwLower = kw.replace(/^"|"$/g,'').trim().toLowerCase();
+  var words   = kwLower.split(/\s+/).filter(function(w){ return w.length > 0; });
+  var today   = todayISO();
+
+  // Build a word-boundary regex for each keyword word.
+  // \b works between word chars (\w) and non-word chars.
+  // For words ending in digits like "p4", we add (?!\w) to stop partial matches.
+  var wordRegs = words.map(function(w) {
+    var safe = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Use \b before and after — this prevents "AI" matching inside "MAIL"
+    // and "p4" matching inside "p40"
+    return new RegExp('(?<![\\w])' + safe + '(?![\\w])', 'i');
+  });
+
+  function titleMatches(title) {
+    return wordRegs.every(function(re) { return re.test(title); });
+  }
+
+  var result = raw.filter(function(item) {
+    // 1. Every keyword word must appear as a whole word in title
+    if (!titleMatches(item.title)) return false;
+    // 2. Date filter
+    if (filter === 'today') return item.isoDate === today;
+    return true;
+  });
+
+  if (!result.length) {
+    S.pool[kw] = [];
+    // Count how many pass exact match (ignoring date) for hint
+    var anyDate = raw.filter(function(item){ return titleMatches(item.title); });
+    S.pool[kw]._msg = filter === 'today'
+      ? '📭 No exact results for <strong>"' + esc(kw) + '"</strong> today.'
+        + (anyDate.length
+            ? ' <em>(' + anyDate.length + ' older article' + (anyDate.length>1?'s':'') + ' found — try <strong>🗓 Anytime</strong>)</em>'
+            : ' <em>No articles found even for Anytime — keyword may be too specific.</em>')
+      : '📭 No exact results for <strong>"' + esc(kw) + '"</strong> at all. Try a broader keyword.';
   } else {
-    // Pool exhausted — fetch fresh from server
+    S.pool[kw] = result;
+  }
+}
+
+// ── REFRESH CLICK ─────────────────────────────────────────────
+function onRefreshClick(kw) {
+  var pool   = S.pool[kw]   || [];
+  var offset = S.offset[kw] || 0;
+  if (Array.isArray(pool) && offset + PAGE < pool.length) {
+    S.offset[kw] = offset + PAGE;
+    renderCard(kw);
+    showToast('Showing articles ' + (offset+PAGE+1) + '–' + Math.min(offset+PAGE+PAGE, pool.length));
+  } else {
     showToast('Fetching fresh articles…');
-    fetchFromServer(kw);
+    fetchServer(kw);
   }
 }
 
 function refreshAll() {
-  STATE.keywords.forEach(function(kw) { fetchFromServer(kw); });
+  S.keywords.forEach(fetchServer);
 }
 
 // ── FETCH FROM SERVER ─────────────────────────────────────────
-function fetchFromServer(kw) {
-  STATE.loading[kw] = true;
-  renderKeywordBlock(kw);
+function fetchServer(kw) {
+  S.loading[kw] = true;
+  renderCard(kw);
 
   google.script.run
     .withSuccessHandler(function(data) {
-      STATE.loading[kw] = false;
-
+      S.loading[kw] = false;
       if (data && data.error) {
-        STATE.pool[kw]   = [];
-        STATE.offset[kw] = 0;
-        STATE.pool[kw]._error = data.error;
+        S.rawPool[kw] = { _err: data.error };
       } else if (data && data.noResults) {
-        STATE.pool[kw]   = [];
-        STATE.offset[kw] = 0;
-        STATE.pool[kw]._noResults = data.message;
+        S.rawPool[kw] = { _msg: '📭 ' + data.message };
       } else {
-        STATE.pool[kw]   = Array.isArray(data) ? data : [];
-        STATE.offset[kw] = 0;  // restart from top for fresh fetch
+        S.rawPool[kw] = Array.isArray(data) ? data : [];
       }
-
-      document.getElementById('lastRefreshed').textContent =
+      S.offset[kw] = 0;
+      applyFilter(kw);
+      document.getElementById('lastRefresh').textContent =
         'Last refreshed: ' + new Date().toLocaleTimeString();
-      renderKeywordBlock(kw);
+      renderCard(kw);
     })
     .withFailureHandler(function(err) {
-      STATE.loading[kw] = false;
-      STATE.pool[kw]    = [];
-      STATE.pool[kw]._error = err.message;
-      STATE.offset[kw]  = 0;
-      renderKeywordBlock(kw);
+      S.loading[kw] = false;
+      S.rawPool[kw] = { _err: err.message || 'Unknown error' };
+      S.pool[kw]    = S.rawPool[kw];
+      S.offset[kw]  = 0;
+      renderCard(kw);
     })
     .fetchNews(kw);
 }
 
-// ── RENDER: FULL PAGE ──────────────────────────────────────────
+// ── RENDER ALL ────────────────────────────────────────────────
 function render() {
-  renderPills();
-  renderResults();
-  document.getElementById('actionsBar').style.display =
-    STATE.keywords.length ? 'flex' : 'none';
-}
-
-function renderPills() {
-  document.getElementById('pills').innerHTML = STATE.keywords.map(function(kw) {
-    return '<div class="pill">'
-      + '<span>' + esc(kw) + '</span>'
-      + '<button class="pill-remove" data-remove-kw="' + esc(kw) + '" title="Remove">✕</button>'
-      + '</div>';
+  // Pills
+  document.getElementById('pills').innerHTML = S.keywords.map(function(kw){
+    return '<div class="pill"><span>'+esc(kw)+'</span>'
+      +'<button class="pill-x" data-remove-kw="'+esc(kw)+'" title="Remove">✕</button></div>';
   }).join('');
-}
 
-function renderResults() {
-  var c = document.getElementById('resultsContainer');
-  if (!STATE.keywords.length) {
-    c.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><div>Add a keyword above to start tracking today\'s news</div></div>';
+  // Actions bar
+  document.getElementById('actionsBar').style.display = S.keywords.length ? 'flex' : 'none';
+
+  // Grid
+  var g = document.getElementById('grid');
+  if (!S.keywords.length) {
+    g.innerHTML = '<div class="empty"><div class="ico">🔍</div><div>Add a keyword above to start tracking news</div></div>';
     return;
   }
-  c.innerHTML = STATE.keywords.map(function(kw) {
-    return '<div class="results-block" id="' + blockId(kw) + '">' + buildCard(kw) + '</div>';
+  g.innerHTML = S.keywords.map(function(kw){
+    return '<div id="'+cardId(kw)+'">'+buildCard(kw)+'</div>';
   }).join('');
 }
 
-// ── RENDER: SINGLE CARD ────────────────────────────────────────
-function renderKeywordBlock(kw) {
-  var el = document.getElementById(blockId(kw));
-  if (!el) { renderResults(); return; }
+function renderCard(kw) {
+  var el = document.getElementById(cardId(kw));
+  if (!el) { render(); return; }
   el.innerHTML = buildCard(kw);
 }
 
-// ── BUILD CARD HTML ────────────────────────────────────────────
+// ── BUILD CARD HTML ───────────────────────────────────────────
 function buildCard(kw) {
-  var pool      = STATE.pool[kw];
-  var offset    = STATE.offset[kw] || 0;
-  var isLoading = STATE.loading[kw];
+  var pool      = S.pool[kw];
+  var offset    = S.offset[kw] || 0;
+  var loading   = S.loading[kw];
+  var filter    = S.timeFilter[kw] || 'today';
+  var isArr     = Array.isArray(pool);
+  var total     = isArr ? pool.length : 0;
+  var pageEnd   = Math.min(offset + PAGE, total);
+  var hasMore   = isArr && offset + PAGE < pool.length;
 
-  // ── header ──
-  var totalInPool = pool ? pool.length : 0;
-  var pageEnd     = Math.min(offset + PAGE_SIZE, totalInPool);
-  var hasMore     = pool && (offset + PAGE_SIZE < pool.length);
+  // ── Card top row ──
+  var countLabel = (total > 0 && !loading)
+    ? '<span class="kw-count">'+( offset+1)+'–'+pageEnd+' / '+total+'</span>' : '';
 
-  var pageLabel = (totalInPool > 0 && !isLoading)
-    ? '<span class="kw-page">' + (offset + 1) + '–' + pageEnd + ' of ' + totalInPool + ' today</span>'
-    : '';
-
-  var timeLabel = (pool && pool._fetchTime && !isLoading)
-    ? '<span class="kw-time">' + esc(pool._fetchTime) + '</span>'
-    : '';
-
-  var header = '<div class="kw-header">'
-    + '<span class="kw-badge">' + esc(kw) + '</span>'
-    + pageLabel
-    + timeLabel
-    + '<button class="btn btn-outline btn-sm kw-refresh" data-refresh-kw="' + esc(kw) + '">↻ Refresh</button>'
+  var top = '<div class="card-top">'
+    + '<span class="kw-badge">'+esc(kw)+'</span>'
+    + countLabel
+    + '<span class="exact-tag">Exact</span>'
+    + '<button class="btn btn-ghost btn-sm card-refresh" data-refresh-kw="'+esc(kw)+'">↻ Refresh</button>'
     + '</div>';
 
-  // ── body ──
-  var body = '';
+  // ── FILTER BUTTONS (always visible) ──
+  var filters = '<div class="filter-bar">'
+    + '<button data-filter-kw="'+esc(kw)+'" data-filter-val="today"'
+    + (filter==='today' ? ' class="active"' : '')+'>'
+    + '⚡ As it Happens</button>'
+    + '<button data-filter-kw="'+esc(kw)+'" data-filter-val="anytime"'
+    + (filter==='anytime' ? ' class="active"' : '')+'>'
+    + '🗓 Anytime</button>'
+    + '</div>';
 
-  if (isLoading) {
-    body = '<div class="loading-row"><div class="spinner"></div> Fetching today\'s news for "' + esc(kw) + '"…</div>';
+  // ── Body ──
+  var body = '';
+  var kwClean = kw.replace(/^"|"$/g,'').trim();
+
+  if (loading) {
+    body = '<div class="spin-row"><div class="spin"></div>Fetching "'+esc(kw)+'"…</div>';
 
   } else if (!pool) {
-    body = '<div class="no-kw-msg">No results yet — click <strong>↻ Refresh All</strong> or the Refresh button.</div>';
+    body = '<div class="msg">Click <strong>↻ Refresh</strong> to fetch news.</div>';
 
-  } else if (pool._error) {
-    body = '<div class="error-msg">⚠ ' + esc(pool._error) + '</div>';
+  } else if (pool._err) {
+    body = '<div class="msg-err">⚠ '+esc(pool._err)+'</div>';
 
-  } else if (pool._noResults) {
-    body = '<div class="no-kw-msg">📭 ' + esc(pool._noResults) + '</div>';
+  } else if (pool._msg) {
+    body = '<div class="msg">'+pool._msg+'</div>';
 
-  } else if (!pool.length) {
-    body = '<div class="no-kw-msg">No news articles found for today.</div>';
+  } else if (!total) {
+    body = '<div class="msg">No articles to show.</div>';
 
   } else {
-    var page = pool.slice(offset, offset + PAGE_SIZE);
-    body = page.map(function(item, i) {
-      return '<div class="news-item">'
-        + '<div class="news-meta">' + esc(item.source) + (item.date ? ' · ' + esc(item.date) : '') + '</div>'
-        + '<div class="news-title">' + esc(item.title) + (i === 0 && offset === 0 ? '<span class="badge-new">Latest</span>' : '') + '</div>'
-        + '<div class="news-link"><a href="' + esc(item.url) + '" target="_blank" rel="noopener">Read ↗</a></div>'
-        + '</div>';
-    }).join('');
-  }
-
-  // ── footer ──
-  var footer = '';
-  if (pool && pool.length > 0 && !isLoading) {
-    var footerMsg = hasMore
-      ? (pool.length - pageEnd) + ' more articles in pool'
-      : 'End of pool — refresh will fetch new articles';
-    footer = '<div class="card-footer">'
-      + '<span>' + footerMsg + '</span>'
-      + '<span>' + pageEnd + ' / ' + totalInPool + '</span>'
+    var slice = pool.slice(offset, offset + PAGE);
+    body = '<div class="articles">'
+      + slice.map(function(item, i){
+          return '<div class="article">'
+            +'<div class="art-meta">'+esc(item.source)+(item.date?' · '+esc(item.date):'')+'</div>'
+            +'<div class="art-title">'+hlWord(item.title, kwClean)
+            +(i===0 && offset===0 ? '<span class="badge-latest">Latest</span>' : '')
+            +'</div>'
+            +'<div class="art-link"><a href="'+esc(item.url)+'" target="_blank" rel="noopener">Read ↗</a></div>'
+            +'</div>';
+        }).join('')
       + '</div>';
   }
 
-  return header + '<div class="news-list">' + body + footer + '</div>';
+  // ── Footer ──
+  var foot = '';
+  if (isArr && total > 0 && !loading) {
+    foot = '<div class="card-foot">'
+      +(hasMore ? '<span>'+(total-pageEnd)+' more in pool</span>' : '<span>End of pool</span>')
+      +'<span>'+pageEnd+' / '+total+'</span>'
+      +'</div>';
+  }
+
+  return '<div class="card">'+top+filters+body+foot+'</div>';
 }
 
-// ── KEYWORD MANAGEMENT ─────────────────────────────────────────
+// ── HIGHLIGHT keyword words in title ─────────────────────────
+function hlWord(title, kw) {
+  var words  = kw.trim().split(/\s+/);
+  var result = esc(title);
+  words.forEach(function(w){
+    if (!w) return;
+    var safe = w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    result   = result.replace(new RegExp('('+safe+')','gi'),'<mark>$1</mark>');
+  });
+  return result;
+}
+
+// ── KEYWORD CRUD ──────────────────────────────────────────────
 function addKeyword() {
   var inp = document.getElementById('kwInput');
   var kw  = inp.value.trim();
   if (!kw) return;
-  if (STATE.keywords.indexOf(kw) !== -1) { showToast('Already tracking this keyword'); inp.value = ''; return; }
-  STATE.keywords.push(kw);
+  if (S.keywords.indexOf(kw) !== -1) { showToast('Already tracking this keyword'); inp.value=''; return; }
+  S.keywords.push(kw);
+  S.timeFilter[kw] = 'today';
   inp.value = '';
-  saveKeywords();
+  saveKw();
   render();
 }
 
 function removeKeyword(kw) {
-  STATE.keywords = STATE.keywords.filter(function(k) { return k !== kw; });
-  delete STATE.pool[kw];
-  delete STATE.offset[kw];
-  saveKeywords();
-  render();
+  S.keywords = S.keywords.filter(function(k){ return k!==kw; });
+  delete S.rawPool[kw]; delete S.pool[kw];
+  delete S.offset[kw];  delete S.timeFilter[kw];
+  saveKw(); render();
 }
 
 function clearAll() {
-  if (!confirm('Remove all keywords and results?')) return;
-  STATE.keywords = [];
-  STATE.pool     = {};
-  STATE.offset   = {};
-  saveKeywords();
-  render();
+  if (!confirm('Remove all keywords?')) return;
+  S.keywords=[]; S.rawPool={}; S.pool={}; S.offset={}; S.timeFilter={};
+  saveKw(); render();
 }
 
-function saveKeywords() {
-  google.script.run.saveKeywords(STATE.keywords);
-}
+function saveKw() { google.script.run.saveKeywords(S.keywords); }
 
-// ── UTILS ──────────────────────────────────────────────────────
-function blockId(kw) {
-  return 'block-' + btoa(unescape(encodeURIComponent(kw)));
-}
+// ── UTILS ─────────────────────────────────────────────────────
+function cardId(kw) { return 'c-'+btoa(unescape(encodeURIComponent(kw))); }
 
 function esc(s) {
-  return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function showToast(msg) {
   var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 2500);
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 </script>
 </body>
