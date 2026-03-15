@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Keyword Alerts</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #f5f6fa;
+    --surface:    #ffffff;
+    --border:     #e3e6ef;
+    --accent:     #4A86E8;
+    --accent2:    #1a56c4;
+    --text:       #1a1d2e;
+    --muted:      #6b7280;
+    --success:    #16a34a;
+    --success-bg: #dcfce7;
+    --danger:     #dc2626;
+    --radius:     10px;
+    --shadow:     0 2px 12px rgba(74,134,232,0.07);
+  }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .topbar {
+    background: var(--accent); color: #fff;
+    padding: 0 24px; height: 54px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+    box-shadow: 0 2px 8px rgba(74,134,232,0.18);
+  }
+  .topbar h1 { font-size: 17px; font-weight: 600; letter-spacing: 0.02em; }
+  .topbar span { font-size: 12px; opacity: 0.8; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  .add-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 24px;
+    margin-bottom: 24px; box-shadow: var(--shadow);
+  }
+  .add-card label {
+    font-size: 13px; font-weight: 600; color: var(--muted);
+    display: block; margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .add-row { display: flex; gap: 10px; }
+  .add-row input {
+    flex: 1; height: 40px; padding: 0 14px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 14px; color: var(--text); outline: none;
+    transition: border-color 0.15s; background: var(--bg);
+  }
+  .add-row input:focus { border-color: var(--accent); background: #fff; }
+  .add-row input::placeholder { color: #b0b7c3; }
+
+  .btn {
+    height: 40px; padding: 0 18px; border-radius: 8px; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background 0.15s, transform 0.08s; white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-outline { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
+  .btn-outline:hover { background: #eef3fd; }
+  .btn-sm { height: 30px; padding: 0 12px; font-size: 12px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 12px 5px 14px; border-radius: 20px;
+    background: #eef3fd; border: 1px solid #c7d9f9;
+    font-size: 13px; color: var(--accent2); font-weight: 500;
+  }
+  .pill-remove {
+    background: none; border: none; cursor: pointer;
+    color: #93a8d6; font-size: 15px; line-height: 1; padding: 0;
+    display: flex; align-items: center;
+  }
+  .pill-remove:hover { color: var(--danger); }
+
+  .actions-bar {
+    display: flex; gap: 10px; align-items: center;
+    margin-bottom: 24px; flex-wrap: wrap;
+  }
+  .last-refreshed { font-size: 12px; color: var(--muted); margin-left: auto; }
+
+  #resultsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+
+  .results-block { margin-bottom: 0; }
+
+  .kw-header {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .kw-badge {
+    font-size: 13px; font-weight: 700;
+    background: var(--accent); color: #fff;
+    padding: 4px 14px; border-radius: 20px;
+  }
+  .kw-count { font-size: 12px; color: var(--muted); }
+  .kw-page {
+    font-size: 11px; color: var(--accent2);
+    background: #eef3fd; border: 1px solid #c7d9f9;
+    padding: 2px 8px; border-radius: 10px;
+  }
+  .kw-time { font-size: 11px; color: var(--muted); }
+  .kw-refresh { margin-left: auto; }
+
+  .news-list {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .news-item {
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 8px 14px; align-items: start; transition: background 0.12s;
+  }
+  .news-item:last-child { border-bottom: none; }
+  .news-item:hover { background: #f9faff; }
+  .news-meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; grid-column: 1; }
+  .news-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.45; grid-column: 1; }
+  .badge-new {
+    font-size: 10px; font-weight: 700;
+    background: var(--success-bg); color: var(--success);
+    padding: 1px 7px; border-radius: 10px;
+    display: inline-block; margin-left: 6px; vertical-align: middle;
+  }
+  .news-link { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+  .news-link a {
+    display: inline-block; padding: 5px 12px;
+    background: #eef3fd; color: var(--accent2);
+    border-radius: 6px; font-size: 12px; font-weight: 600;
+    text-decoration: none; white-space: nowrap; transition: background 0.12s;
+  }
+  .news-link a:hover { background: #dce8fb; }
+
+  /* refresh footer inside card */
+  .card-footer {
+    padding: 10px 18px;
+    border-top: 1px solid var(--border);
+    background: #fafbff;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--muted);
+  }
+
+  .loading-row {
+    padding: 20px 18px; color: var(--muted); font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid #dce8fb; border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty-state { text-align: center; padding: 52px 20px; color: var(--muted); font-size: 14px; }
+  .empty-state .icon { font-size: 36px; margin-bottom: 10px; }
+  .error-msg { padding: 14px 18px; color: var(--danger); font-size: 13px; background: #fff5f5; }
+  .no-kw-msg { padding: 14px 18px; color: var(--muted); font-size: 13px; }
+
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #1a1d2e; color: #fff; padding: 10px 22px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.25s;
+    pointer-events: none; z-index: 100;
+  }
+  #toast.show { opacity: 1; }
+
+  @media (max-width: 560px) {
+    .topbar h1 { font-size: 15px; }
+    .news-item { grid-template-columns: 1fr; }
+    .news-link { grid-column: 1; grid-row: auto; }
+    .actions-bar { flex-direction: column; align-items: flex-start; }
+    .last-refreshed { margin-left: 0; }
+    #resultsContainer { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🔔 Keyword Alerts</h1>
+  <span>Today's news only · Google News RSS</span>
+</div>
+
+<div class="container">
+
+  <div class="add-card">
+    <label>Track a keyword or topic</label>
+    <div class="add-row">
+      <input id="kwInput" type="text" placeholder='e.g. "Tamil Nadu news", Bitcoin, AI regulation' />
+      <button class="btn btn-primary" id="addBtn">+ Add</button>
+    </div>
+    <div class="pills" id="pills"></div>
+  </div>
+
+  <div class="actions-bar" id="actionsBar" style="display:none">
+    <button class="btn btn-primary" id="refreshAllBtn">↻ Refresh All</button>
+    <button class="btn btn-outline" id="clearAllBtn">✕ Clear All</button>
+    <span class="last-refreshed" id="lastRefreshed"></span>
+  </div>
+
+  <div id="resultsContainer">
+    <div class="empty-state">
+      <div class="icon">🔍</div>
+      <div>Add a keyword above to start tracking today's news</div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+var PAGE_SIZE = 8;
+
+// STATE: per keyword we store pool (all fetched articles), offset (current page start)
+var STATE = { keywords: [], pool: {}, offset: {}, loading: {} };
+
+// ── INIT ───────────────────────────────────────────────────────
+window.onload = function () {
+  google.script.run
+    .withSuccessHandler(function(kws) { STATE.keywords = kws || []; render(); })
+    .withFailureHandler(function() { render(); })
+    .loadKeywords();
+};
+
+// ── STATIC LISTENERS ──────────────────────────────────────────
+document.getElementById('addBtn').addEventListener('click', addKeyword);
+document.getElementById('refreshAllBtn').addEventListener('click', refreshAll);
+document.getElementById('clearAllBtn').addEventListener('click', clearAll);
+document.getElementById('kwInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') addKeyword();
+});
+
+// ── DELEGATED LISTENERS ───────────────────────────────────────
+document.getElementById('resultsContainer').addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-refresh-kw]');
+  if (btn) handleRefreshClick(btn.getAttribute('data-refresh-kw'));
+});
+document.getElementById('pills').addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-remove-kw]');
+  if (btn) removeKeyword(btn.getAttribute('data-remove-kw'));
+});
+
+// ── REFRESH LOGIC ─────────────────────────────────────────────
+// On each refresh click:
+//   - If pool has more unseen articles → show next 8 (no server call)
+//   - If pool exhausted → re-fetch from server and restart from top
+function handleRefreshClick(kw) {
+  var pool   = STATE.pool[kw]   || [];
+  var offset = STATE.offset[kw] || 0;
+  var next   = offset + PAGE_SIZE;
+
+  if (next < pool.length) {
+    // Still articles left in pool — advance the page
+    STATE.offset[kw] = next;
+    renderKeywordBlock(kw);
+    showToast('Showing articles ' + (next + 1) + '–' + Math.min(next + PAGE_SIZE, pool.length));
+  } else {
+    // Pool exhausted — fetch fresh from server
+    showToast('Fetching fresh articles…');
+    fetchFromServer(kw);
+  }
+}
+
+function refreshAll() {
+  STATE.keywords.forEach(function(kw) { fetchFromServer(kw); });
+}
+
+// ── FETCH FROM SERVER ─────────────────────────────────────────
+function fetchFromServer(kw) {
+  STATE.loading[kw] = true;
+  renderKeywordBlock(kw);
+
+  google.script.run
+    .withSuccessHandler(function(data) {
+      STATE.loading[kw] = false;
+
+      if (data && data.error) {
+        STATE.pool[kw]   = [];
+        STATE.offset[kw] = 0;
+        STATE.pool[kw]._error = data.error;
+      } else if (data && data.noResults) {
+        STATE.pool[kw]   = [];
+        STATE.offset[kw] = 0;
+        STATE.pool[kw]._noResults = data.message;
+      } else {
+        STATE.pool[kw]   = Array.isArray(data) ? data : [];
+        STATE.offset[kw] = 0;  // restart from top for fresh fetch
+      }
+
+      document.getElementById('lastRefreshed').textContent =
+        'Last refreshed: ' + new Date().toLocaleTimeString();
+      renderKeywordBlock(kw);
+    })
+    .withFailureHandler(function(err) {
+      STATE.loading[kw] = false;
+      STATE.pool[kw]    = [];
+      STATE.pool[kw]._error = err.message;
+      STATE.offset[kw]  = 0;
+      renderKeywordBlock(kw);
+    })
+    .fetchNews(kw);
+}
+
+// ── RENDER: FULL PAGE ──────────────────────────────────────────
+function render() {
+  renderPills();
+  renderResults();
+  document.getElementById('actionsBar').style.display =
+    STATE.keywords.length ? 'flex' : 'none';
+}
+
+function renderPills() {
+  document.getElementById('pills').innerHTML = STATE.keywords.map(function(kw) {
+    return '<div class="pill">'
+      + '<span>' + esc(kw) + '</span>'
+      + '<button class="pill-remove" data-remove-kw="' + esc(kw) + '" title="Remove">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+function renderResults() {
+  var c = document.getElementById('resultsContainer');
+  if (!STATE.keywords.length) {
+    c.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><div>Add a keyword above to start tracking today\'s news</div></div>';
+    return;
+  }
+  c.innerHTML = STATE.keywords.map(function(kw) {
+    return '<div class="results-block" id="' + blockId(kw) + '">' + buildCard(kw) + '</div>';
+  }).join('');
+}
+
+// ── RENDER: SINGLE CARD ────────────────────────────────────────
+function renderKeywordBlock(kw) {
+  var el = document.getElementById(blockId(kw));
+  if (!el) { renderResults(); return; }
+  el.innerHTML = buildCard(kw);
+}
+
+// ── BUILD CARD HTML ────────────────────────────────────────────
+function buildCard(kw) {
+  var pool      = STATE.pool[kw];
+  var offset    = STATE.offset[kw] || 0;
+  var isLoading = STATE.loading[kw];
+
+  // ── header ──
+  var totalInPool = pool ? pool.length : 0;
+  var pageEnd     = Math.min(offset + PAGE_SIZE, totalInPool);
+  var hasMore     = pool && (offset + PAGE_SIZE < pool.length);
+
+  var pageLabel = (totalInPool > 0 && !isLoading)
+    ? '<span class="kw-page">' + (offset + 1) + '–' + pageEnd + ' of ' + totalInPool + ' today</span>'
+    : '';
+
+  var timeLabel = (pool && pool._fetchTime && !isLoading)
+    ? '<span class="kw-time">' + esc(pool._fetchTime) + '</span>'
+    : '';
+
+  var header = '<div class="kw-header">'
+    + '<span class="kw-badge">' + esc(kw) + '</span>'
+    + pageLabel
+    + timeLabel
+    + '<button class="btn btn-outline btn-sm kw-refresh" data-refresh-kw="' + esc(kw) + '">↻ Refresh</button>'
+    + '</div>';
+
+  // ── body ──
+  var body = '';
+
+  if (isLoading) {
+    body = '<div class="loading-row"><div class="spinner"></div> Fetching today\'s news for "' + esc(kw) + '"…</div>';
+
+  } else if (!pool) {
+    body = '<div class="no-kw-msg">No results yet — click <strong>↻ Refresh All</strong> or the Refresh button.</div>';
+
+  } else if (pool._error) {
+    body = '<div class="error-msg">⚠ ' + esc(pool._error) + '</div>';
+
+  } else if (pool._noResults) {
+    body = '<div class="no-kw-msg">📭 ' + esc(pool._noResults) + '</div>';
+
+  } else if (!pool.length) {
+    body = '<div class="no-kw-msg">No news articles found for today.</div>';
+
+  } else {
+    var page = pool.slice(offset, offset + PAGE_SIZE);
+    body = page.map(function(item, i) {
+      return '<div class="news-item">'
+        + '<div class="news-meta">' + esc(item.source) + (item.date ? ' · ' + esc(item.date) : '') + '</div>'
+        + '<div class="news-title">' + esc(item.title) + (i === 0 && offset === 0 ? '<span class="badge-new">Latest</span>' : '') + '</div>'
+        + '<div class="news-link"><a href="' + esc(item.url) + '" target="_blank" rel="noopener">Read ↗</a></div>'
+        + '</div>';
+    }).join('');
+  }
+
+  // ── footer ──
+  var footer = '';
+  if (pool && pool.length > 0 && !isLoading) {
+    var footerMsg = hasMore
+      ? (pool.length - pageEnd) + ' more articles in pool'
+      : 'End of pool — refresh will fetch new articles';
+    footer = '<div class="card-footer">'
+      + '<span>' + footerMsg + '</span>'
+      + '<span>' + pageEnd + ' / ' + totalInPool + '</span>'
+      + '</div>';
+  }
+
+  return header + '<div class="news-list">' + body + footer + '</div>';
+}
+
+// ── KEYWORD MANAGEMENT ─────────────────────────────────────────
+function addKeyword() {
+  var inp = document.getElementById('kwInput');
+  var kw  = inp.value.trim();
+  if (!kw) return;
+  if (STATE.keywords.indexOf(kw) !== -1) { showToast('Already tracking this keyword'); inp.value = ''; return; }
+  STATE.keywords.push(kw);
+  inp.value = '';
+  saveKeywords();
+  render();
+}
+
+function removeKeyword(kw) {
+  STATE.keywords = STATE.keywords.filter(function(k) { return k !== kw; });
+  delete STATE.pool[kw];
+  delete STATE.offset[kw];
+  saveKeywords();
+  render();
+}
+
+function clearAll() {
+  if (!confirm('Remove all keywords and results?')) return;
+  STATE.keywords = [];
+  STATE.pool     = {};
+  STATE.offset   = {};
+  saveKeywords();
+  render();
+}
+
+function saveKeywords() {
+  google.script.run.saveKeywords(STATE.keywords);
+}
+
+// ── UTILS ──────────────────────────────────────────────────────
+function blockId(kw) {
+  return 'block-' + btoa(unescape(encodeURIComponent(kw)));
+}
+
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+</script>
+</body>
+</html>
