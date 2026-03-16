@@ -51,15 +51,10 @@ function fetchNews(keyword) {
   }
 }
 
-function saveKeywords(keywords) {
-  PropertiesService.getUserProperties().setProperty('kw', JSON.stringify(keywords));
-  return true;
-}
-
-function loadKeywords() {
-  var raw = PropertiesService.getUserProperties().getProperty('kw');
-  return raw ? JSON.parse(raw) : [];
-}
+// Keywords are now stored in browser localStorage — NOT on server.
+// These stubs exist only so the client call doesn't break.
+function saveKeywords(keywords) { return true; }
+function loadKeywords()         { return [];   }
 
 function extractDomain_(url) {
   try { return new URL(url).hostname.replace('www.', ''); } catch(e) { return ''; }
