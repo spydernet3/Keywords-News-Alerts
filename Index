@@ -104,7 +104,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color:
 /* CARD WRAPPER */
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
 
-/* CARD TOP — keyword badge + refresh */
+/* CARD TOP */
 .card-top {
   display: flex; align-items: center; gap: 8px;
   padding: 14px 16px 0 16px; flex-wrap: wrap;
@@ -127,48 +127,31 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color:
 }
 .card-refresh { margin-left: auto; }
 
-/* =====================================================
-   FILTER BUTTONS — two big toggle buttons per card
-   ===================================================== */
+/* FILTER BUTTONS */
 .filter-bar {
-  display: flex;
-  gap: 0;
+  display: flex; gap: 0;
   margin: 12px 16px 14px 16px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 2px solid var(--accent);
-  width: 100%;
+  border-radius: 8px; overflow: hidden;
+  border: 2px solid var(--accent); width: 100%;
 }
 .filter-bar button {
-  flex: 1;
-  height: 36px;
-  border: none;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
+  flex: 1; height: 36px; border: none;
+  font-size: 12px; font-weight: 700; cursor: pointer;
   transition: background 0.15s, color 0.15s;
-  background: #fff;
-  color: var(--accent);
+  background: #fff; color: var(--accent);
   border-right: 1px solid var(--accent);
   letter-spacing: 0.01em;
 }
 .filter-bar button:last-child { border-right: none; }
-.filter-bar button.active {
-  background: var(--accent);
-  color: #fff;
-}
-.filter-bar button:not(.active):hover {
-  background: #dce8fb;
-}
-/* ===================================================== */
+.filter-bar button.active { background: var(--accent); color: #fff; }
+.filter-bar button:not(.active):hover { background: #dce8fb; }
 
 /* ARTICLES */
 .articles { border-top: 1px solid var(--border); }
 .article {
   padding: 13px 16px; border-bottom: 1px solid var(--border);
   display: grid; grid-template-columns: 1fr auto;
-  gap: 6px 12px; align-items: start;
-  transition: background 0.1s;
+  gap: 6px 12px; align-items: start; transition: background 0.1s;
 }
 .article:last-child { border-bottom: none; }
 .article:hover { background: #f6f8ff; }
@@ -185,8 +168,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color:
   display: inline-block; padding: 5px 11px;
   background: #eef3fd; color: var(--accent2);
   border-radius: 6px; font-size: 12px; font-weight: 700;
-  text-decoration: none; white-space: nowrap;
-  transition: background 0.12s;
+  text-decoration: none; white-space: nowrap; transition: background 0.12s;
 }
 .art-link a:hover { background: #dce8fb; }
 mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0 1px; }
@@ -337,27 +319,24 @@ mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0
 
 <script>
 // =============================================================
-//  STATE
-//  rawPool[kw]    = all articles returned by server (any date)
-//  pool[kw]       = articles after exact-match + date filter
-//  timeFilter[kw] = 'today' | 'anytime'
-//  offset[kw]     = current page start index
+//  STORAGE — everything in browser localStorage, private per user
+//  Keywords:      localStorage key 'kw_list'
+//  Auto-refresh:  localStorage key 'ar_interval'
+//  Time filters:  localStorage key 'kw_filters'
 //
-//  IMPORTANT:
-//  Clicking "⚡ As it Happens" or "🗓 Anytime" does NOT call
-//  the server — it just re-filters rawPool instantly.
-//  Only "↻ Refresh" calls the server.
+//  When you share the app URL, others open it with a blank slate.
+//  Your keywords and settings are only in YOUR browser.
 // =============================================================
 
-var PAGE = 6;
+var PAGE = 5;
 
 var S = {
   keywords:   [],
-  rawPool:    {},   // server data, untouched
-  pool:       {},   // filtered view
+  rawPool:    {},
+  pool:       {},
   offset:     {},
   loading:    {},
-  timeFilter: {}    // 'today' | 'anytime'
+  timeFilter: {}
 };
 
 function todayISO() {
@@ -367,27 +346,54 @@ function todayISO() {
     + String(d.getDate()).padStart(2,'0');
 }
 
+// ── LOCALSTORAGE HELPERS ──────────────────────────────────────
+function saveKw() {
+  localStorage.setItem('kw_list', JSON.stringify(S.keywords));
+}
+
+function loadKw() {
+  try {
+    var raw = localStorage.getItem('kw_list');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveFilters() {
+  localStorage.setItem('kw_filters', JSON.stringify(S.timeFilter));
+}
+
+function loadFilters() {
+  try {
+    var raw = localStorage.getItem('kw_filters');
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+}
+
 // ── INIT ──────────────────────────────────────────────────────
+// Everything loads from localStorage — no server call needed for init
 window.onload = function() {
-  google.script.run
-    .withSuccessHandler(function(kws) {
-      S.keywords = kws || [];
-      render();
-      // Restore saved auto-refresh interval after page load
-      var saved = parseInt(localStorage.getItem('ar_interval') || '0', 10);
-      if (saved > 0) setAutoRefresh(saved);
-    })
-    .withFailureHandler(function() { render(); })
-    .loadKeywords();
+  S.keywords   = loadKw();
+  S.timeFilter = loadFilters();
+
+  // Ensure every keyword has a default filter
+  S.keywords.forEach(function(kw) {
+    if (!S.timeFilter[kw]) S.timeFilter[kw] = 'today';
+  });
+
+  render();
+
+  // Restore auto-refresh interval
+  var saved = parseInt(localStorage.getItem('ar_interval') || '0', 10);
+  if (saved > 0) setAutoRefresh(saved);
 };
 
 // ── LISTENERS ─────────────────────────────────────────────────
-document.getElementById('addBtn').onclick       = addKeyword;
+document.getElementById('addBtn').onclick        = addKeyword;
 document.getElementById('refreshAllBtn').onclick = refreshAll;
 document.getElementById('clearAllBtn').onclick   = clearAll;
 document.getElementById('kwInput').onkeydown     = function(e){ if(e.key==='Enter') addKeyword(); };
 
-// AUTO-REFRESH STATE
+// ── AUTO-REFRESH ──────────────────────────────────────────────
 var AR = { intervalSec:0, timerId:null, counterId:null, remaining:0 };
 
 document.getElementById('arBtn').addEventListener('click', function(e) {
@@ -409,7 +415,7 @@ function setAutoRefresh(secs) {
   if (AR.timerId)   { clearInterval(AR.timerId);   AR.timerId   = null; }
   if (AR.counterId) { clearInterval(AR.counterId); AR.counterId = null; }
   AR.intervalSec = secs;
-  localStorage.setItem('ar_interval', secs); // persist across page refreshes
+  localStorage.setItem('ar_interval', secs); // persist in browser
 
   [0,30,60,300,600].forEach(function(v) {
     var el  = document.getElementById('arCheck-' + v);
@@ -456,19 +462,15 @@ function fmtSec(s) {
   return s+'s';
 }
 
-// Delegated click — handles both filter buttons and refresh button
+// ── DELEGATED CLICKS ──────────────────────────────────────────
 document.getElementById('grid').addEventListener('click', function(e) {
-  // Filter button clicked?
   var fb = e.target.closest('[data-filter-kw]');
   if (fb) {
     onFilterClick(fb.getAttribute('data-filter-kw'), fb.getAttribute('data-filter-val'));
     return;
   }
-  // Refresh button clicked?
   var rb = e.target.closest('[data-refresh-kw]');
-  if (rb) {
-    onRefreshClick(rb.getAttribute('data-refresh-kw'));
-  }
+  if (rb) onRefreshClick(rb.getAttribute('data-refresh-kw'));
 });
 
 document.getElementById('pills').addEventListener('click', function(e) {
@@ -476,24 +478,22 @@ document.getElementById('pills').addEventListener('click', function(e) {
   if (b) removeKeyword(b.getAttribute('data-remove-kw'));
 });
 
-// ── FILTER BUTTON CLICK ───────────────────────────────────────
-// NO server call — just re-filter the existing rawPool
+// ── FILTER CLICK — no server call ────────────────────────────
 function onFilterClick(kw, val) {
-  if (S.timeFilter[kw] === val) return; // already active
+  if (S.timeFilter[kw] === val) return;
   S.timeFilter[kw] = val;
   S.offset[kw]     = 0;
-  applyFilter(kw);            // re-filter rawPool
+  saveFilters(); // persist filter choice in browser
+  applyFilter(kw);
   renderCard(kw);
   showToast(val === 'today' ? '⚡ Showing today\'s news only' : '🗓 Showing all available news');
 }
 
 // ── APPLY FILTER ─────────────────────────────────────────────
-// Takes rawPool[kw], applies exact word-boundary match + date filter → pool[kw]
 function applyFilter(kw) {
   var raw    = S.rawPool[kw];
   var filter = S.timeFilter[kw] || 'today';
 
-  // If raw is an error/no-results object, pass through as-is
   if (!raw || !Array.isArray(raw)) {
     S.pool[kw] = raw;
     return;
@@ -503,13 +503,8 @@ function applyFilter(kw) {
   var words   = kwLower.split(/\s+/).filter(function(w){ return w.length > 0; });
   var today   = todayISO();
 
-  // Build a word-boundary regex for each keyword word.
-  // \b works between word chars (\w) and non-word chars.
-  // For words ending in digits like "p4", we add (?!\w) to stop partial matches.
   var wordRegs = words.map(function(w) {
     var safe = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    // Use \b before and after — this prevents "AI" matching inside "MAIL"
-    // and "p4" matching inside "p40"
     return new RegExp('(?<![\\w])' + safe + '(?![\\w])', 'i');
   });
 
@@ -518,16 +513,13 @@ function applyFilter(kw) {
   }
 
   var result = raw.filter(function(item) {
-    // 1. Every keyword word must appear as a whole word in title
     if (!titleMatches(item.title)) return false;
-    // 2. Date filter
     if (filter === 'today') return item.isoDate === today;
     return true;
   });
 
   if (!result.length) {
     S.pool[kw] = [];
-    // Count how many pass exact match (ignoring date) for hint
     var anyDate = raw.filter(function(item){ return titleMatches(item.title); });
     S.pool[kw]._msg = filter === 'today'
       ? '📭 No exact results for <strong>"' + esc(kw) + '"</strong> today.'
@@ -540,7 +532,7 @@ function applyFilter(kw) {
   }
 }
 
-// ── REFRESH CLICK ─────────────────────────────────────────────
+// ── REFRESH ───────────────────────────────────────────────────
 function onRefreshClick(kw) {
   var pool   = S.pool[kw]   || [];
   var offset = S.offset[kw] || 0;
@@ -589,18 +581,15 @@ function fetchServer(kw) {
     .fetchNews(kw);
 }
 
-// ── RENDER ALL ────────────────────────────────────────────────
+// ── RENDER ────────────────────────────────────────────────────
 function render() {
-  // Pills
   document.getElementById('pills').innerHTML = S.keywords.map(function(kw){
     return '<div class="pill"><span>'+esc(kw)+'</span>'
       +'<button class="pill-x" data-remove-kw="'+esc(kw)+'" title="Remove">✕</button></div>';
   }).join('');
 
-  // Actions bar
   document.getElementById('actionsBar').style.display = S.keywords.length ? 'flex' : 'none';
 
-  // Grid
   var g = document.getElementById('grid');
   if (!S.keywords.length) {
     g.innerHTML = '<div class="empty"><div class="ico">🔍</div><div>Add a keyword above to start tracking news</div></div>';
@@ -617,20 +606,19 @@ function renderCard(kw) {
   el.innerHTML = buildCard(kw);
 }
 
-// ── BUILD CARD HTML ───────────────────────────────────────────
+// ── BUILD CARD ────────────────────────────────────────────────
 function buildCard(kw) {
-  var pool      = S.pool[kw];
-  var offset    = S.offset[kw] || 0;
-  var loading   = S.loading[kw];
-  var filter    = S.timeFilter[kw] || 'today';
-  var isArr     = Array.isArray(pool);
-  var total     = isArr ? pool.length : 0;
-  var pageEnd   = Math.min(offset + PAGE, total);
-  var hasMore   = isArr && offset + PAGE < pool.length;
+  var pool    = S.pool[kw];
+  var offset  = S.offset[kw] || 0;
+  var loading = S.loading[kw];
+  var filter  = S.timeFilter[kw] || 'today';
+  var isArr   = Array.isArray(pool);
+  var total   = isArr ? pool.length : 0;
+  var pageEnd = Math.min(offset + PAGE, total);
+  var hasMore = isArr && offset + PAGE < pool.length;
 
-  // ── Card top row ──
   var countLabel = (total > 0 && !loading)
-    ? '<span class="kw-count">'+( offset+1)+'–'+pageEnd+' / '+total+'</span>' : '';
+    ? '<span class="kw-count">'+(offset+1)+'–'+pageEnd+' / '+total+'</span>' : '';
 
   var top = '<div class="card-top">'
     + '<span class="kw-badge">'+esc(kw)+'</span>'
@@ -639,35 +627,26 @@ function buildCard(kw) {
     + '<button class="btn btn-ghost btn-sm card-refresh" data-refresh-kw="'+esc(kw)+'">↻ Refresh</button>'
     + '</div>';
 
-  // ── FILTER BUTTONS (always visible) ──
   var filters = '<div class="filter-bar">'
     + '<button data-filter-kw="'+esc(kw)+'" data-filter-val="today"'
-    + (filter==='today' ? ' class="active"' : '')+'>'
-    + '⚡ As it Happens</button>'
+    + (filter==='today' ? ' class="active"' : '')+'>⚡ As it Happens</button>'
     + '<button data-filter-kw="'+esc(kw)+'" data-filter-val="anytime"'
-    + (filter==='anytime' ? ' class="active"' : '')+'>'
-    + '🗓 Anytime</button>'
+    + (filter==='anytime' ? ' class="active"' : '')+'>🗓 Anytime</button>'
     + '</div>';
 
-  // ── Body ──
   var body = '';
   var kwClean = kw.replace(/^"|"$/g,'').trim();
 
   if (loading) {
     body = '<div class="spin-row"><div class="spin"></div>Fetching "'+esc(kw)+'"…</div>';
-
   } else if (!pool) {
     body = '<div class="msg">Click <strong>↻ Refresh</strong> to fetch news.</div>';
-
   } else if (pool._err) {
     body = '<div class="msg-err">⚠ '+esc(pool._err)+'</div>';
-
   } else if (pool._msg) {
     body = '<div class="msg">'+pool._msg+'</div>';
-
   } else if (!total) {
     body = '<div class="msg">No articles to show.</div>';
-
   } else {
     var slice = pool.slice(offset, offset + PAGE);
     body = '<div class="articles">'
@@ -675,15 +654,13 @@ function buildCard(kw) {
           return '<div class="article">'
             +'<div class="art-meta">'+esc(item.source)+(item.date?' · '+esc(item.date):'')+'</div>'
             +'<div class="art-title">'+hlWord(item.title, kwClean)
-            +(i===0 && offset===0 ? '<span class="badge-latest">Latest</span>' : '')
-            +'</div>'
+            +(i===0 && offset===0 ? '<span class="badge-latest">Latest</span>' : '')+'</div>'
             +'<div class="art-link"><a href="'+esc(item.url)+'" target="_blank" rel="noopener">Read ↗</a></div>'
             +'</div>';
         }).join('')
       + '</div>';
   }
 
-  // ── Footer ──
   var foot = '';
   if (isArr && total > 0 && !loading) {
     foot = '<div class="card-foot">'
@@ -695,7 +672,7 @@ function buildCard(kw) {
   return '<div class="card">'+top+filters+body+foot+'</div>';
 }
 
-// ── HIGHLIGHT keyword words in title ─────────────────────────
+// ── HIGHLIGHT ─────────────────────────────────────────────────
 function hlWord(title, kw) {
   var words  = kw.trim().split(/\s+/);
   var result = esc(title);
@@ -717,6 +694,7 @@ function addKeyword() {
   S.timeFilter[kw] = 'today';
   inp.value = '';
   saveKw();
+  saveFilters();
   render();
 }
 
@@ -724,16 +702,14 @@ function removeKeyword(kw) {
   S.keywords = S.keywords.filter(function(k){ return k!==kw; });
   delete S.rawPool[kw]; delete S.pool[kw];
   delete S.offset[kw];  delete S.timeFilter[kw];
-  saveKw(); render();
+  saveKw(); saveFilters(); render();
 }
 
 function clearAll() {
   if (!confirm('Remove all keywords?')) return;
   S.keywords=[]; S.rawPool={}; S.pool={}; S.offset={}; S.timeFilter={};
-  saveKw(); render();
+  saveKw(); saveFilters(); render();
 }
-
-function saveKw() { google.script.run.saveKeywords(S.keywords); }
 
 // ── UTILS ─────────────────────────────────────────────────────
 function cardId(kw) { return 'c-'+btoa(unescape(encodeURIComponent(kw))); }
