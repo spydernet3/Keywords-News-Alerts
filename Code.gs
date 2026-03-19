@@ -2,15 +2,19 @@
 //  KEYWORDS ALERT — Google Apps Script
 //  File: Code.gs
 //
-//  DEPLOYMENT SETTING (IMPORTANT):
+//  DEPLOYMENT SETTING:
 //  Deploy → Manage deployments → Edit → set:
-//    Execute as : "User accessing the web app"
+//    Execute as  : "Me (owner)"       ← keep as default
 //    Who has access : "Anyone"
-//  This stores each user's keywords under their own Google
-//  account — permanent, private, works across devices.
+//
+//  HOW PRIVACY WORKS:
+//  Each user's browser generates a unique random ID on first
+//  visit (stored in their localStorage). Keywords are saved
+//  on the server keyed by that ID — so every user's keywords
+//  are completely separate. No Google login required.
 // ============================================================
 
-var FETCH_LIMIT = 50; // Google News RSS returns ~10–20 items max anyway
+var FETCH_LIMIT = 50;
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
@@ -19,9 +23,6 @@ function doGet() {
 }
 
 // ── FETCH NEWS ────────────────────────────────────────────────
-// Fetches ALL articles with no date filter.
-// Date filtering (Today / Anytime) is handled client-side.
-// Each article includes isoDate for client-side date comparison.
 function fetchNews(keyword) {
   try {
     var cleaned = keyword.replace(/^"|"$/g, '').trim();
@@ -50,13 +51,7 @@ function fetchNews(keyword) {
       var date    = Utilities.formatDate(parsedDate, tz, 'dd MMM yyyy, HH:mm');
       var isoDate = Utilities.formatDate(parsedDate, tz, 'yyyy-MM-dd');
 
-      results.push({
-        title:   title,
-        url:     link,
-        source:  source,
-        date:    date,
-        isoDate: isoDate
-      });
+      results.push({ title: title, url: link, source: source, date: date, isoDate: isoDate });
     }
 
     if (!results.length) {
@@ -70,23 +65,30 @@ function fetchNews(keyword) {
   }
 }
 
-// ── KEYWORD STORAGE ───────────────────────────────────────────
-// Stored per user on the server (Google account).
-// Requires "Execute as: User accessing the web app" deployment.
-// Each user's keywords are completely private and permanent.
-function saveKeywords(keywords) {
+// ── KEYWORD STORAGE — keyed by unique browser ID ─────────────
+// ScriptProperties is shared storage, but we namespace each
+// user's data under their own unique ID: "kw_<uid>"
+// So user A's keywords are completely invisible to user B.
+
+function saveKeywords(uid, keywords) {
   try {
-    PropertiesService.getUserProperties()
-      .setProperty('kw', JSON.stringify(keywords));
+    if (!uid || typeof uid !== 'string' || uid.length < 8) return false;
+    // Sanitize key — only allow alphanumeric + underscore
+    var safeUid = uid.replace(/[^a-zA-Z0-9_]/g, '');
+    PropertiesService.getScriptProperties()
+      .setProperty('kw_' + safeUid, JSON.stringify(keywords));
     return true;
   } catch(e) {
     return false;
   }
 }
 
-function loadKeywords() {
+function loadKeywords(uid) {
   try {
-    var raw = PropertiesService.getUserProperties().getProperty('kw');
+    if (!uid || typeof uid !== 'string' || uid.length < 8) return [];
+    var safeUid = uid.replace(/[^a-zA-Z0-9_]/g, '');
+    var raw = PropertiesService.getScriptProperties()
+                .getProperty('kw_' + safeUid);
     return raw ? JSON.parse(raw) : [];
   } catch(e) {
     return [];
