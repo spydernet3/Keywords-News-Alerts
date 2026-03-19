@@ -1,9 +1,16 @@
 // ============================================================
 //  KEYWORDS ALERT — Google Apps Script
 //  File: Code.gs
+//
+//  DEPLOYMENT SETTING (IMPORTANT):
+//  Deploy → Manage deployments → Edit → set:
+//    Execute as : "User accessing the web app"
+//    Who has access : "Anyone"
+//  This stores each user's keywords under their own Google
+//  account — permanent, private, works across devices.
 // ============================================================
 
-const FETCH_LIMIT = 400;
+var FETCH_LIMIT = 50; // Google News RSS returns ~10–20 items max anyway
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
@@ -11,13 +18,16 @@ function doGet() {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-// Fetches ALL articles (no date filter — date filtering is done client-side)
-// Each article includes isoDate so client can filter Today vs Anytime
+// ── FETCH NEWS ────────────────────────────────────────────────
+// Fetches ALL articles with no date filter.
+// Date filtering (Today / Anytime) is handled client-side.
+// Each article includes isoDate for client-side date comparison.
 function fetchNews(keyword) {
   try {
     var cleaned = keyword.replace(/^"|"$/g, '').trim();
     var q       = encodeURIComponent('"' + cleaned + '"');
-    var url     = 'https://news.google.com/rss/search?q=' + q + '&hl=en-IN&gl=IN&ceid=IN:en';
+    var url     = 'https://news.google.com/rss/search?q=' + q
+                + '&hl=en-IN&gl=IN&ceid=IN:en';
 
     var xml   = UrlFetchApp.fetch(url, { muteHttpExceptions: true }).getContentText();
     var doc   = XmlService.parse(xml);
@@ -31,13 +41,22 @@ function fetchNews(keyword) {
       var pubDate = item.getChildText('pubDate') || '';
       if (!pubDate) continue;
 
+      var parsedDate = new Date(pubDate);
       var title   = (item.getChildText('title') || '').replace(/ - [^-]+$/, '').trim();
       var link    = (item.getChildText('link')  || '').trim();
-      var source  = item.getChild('source') ? item.getChild('source').getText() : extractDomain_(link);
-      var date    = Utilities.formatDate(new Date(pubDate), tz, 'dd MMM yyyy, HH:mm');
-      var isoDate = Utilities.formatDate(new Date(pubDate), tz, 'yyyy-MM-dd');
+      var source  = item.getChild('source')
+                      ? item.getChild('source').getText()
+                      : extractDomain_(link);
+      var date    = Utilities.formatDate(parsedDate, tz, 'dd MMM yyyy, HH:mm');
+      var isoDate = Utilities.formatDate(parsedDate, tz, 'yyyy-MM-dd');
 
-      results.push({ title: title, url: link, source: source, date: date, isoDate: isoDate });
+      results.push({
+        title:   title,
+        url:     link,
+        source:  source,
+        date:    date,
+        isoDate: isoDate
+      });
     }
 
     if (!results.length) {
@@ -51,11 +70,30 @@ function fetchNews(keyword) {
   }
 }
 
-// Keywords are now stored in browser localStorage — NOT on server.
-// These stubs exist only so the client call doesn't break.
-function saveKeywords(keywords) { return true; }
-function loadKeywords()         { return [];   }
+// ── KEYWORD STORAGE ───────────────────────────────────────────
+// Stored per user on the server (Google account).
+// Requires "Execute as: User accessing the web app" deployment.
+// Each user's keywords are completely private and permanent.
+function saveKeywords(keywords) {
+  try {
+    PropertiesService.getUserProperties()
+      .setProperty('kw', JSON.stringify(keywords));
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
 
+function loadKeywords() {
+  try {
+    var raw = PropertiesService.getUserProperties().getProperty('kw');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    return [];
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
 function extractDomain_(url) {
   try { return new URL(url).hostname.replace('www.', ''); } catch(e) { return ''; }
 }
