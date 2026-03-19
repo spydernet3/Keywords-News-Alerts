@@ -4,250 +4,502 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Keywords Alert</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── DESIGN TOKENS ── */
 :root {
-  --bg:      #f0f2f8;
-  --surface: #ffffff;
-  --border:  #dde1ef;
-  --accent:  #4A86E8;
-  --accent2: #1a56c4;
-  --text:    #1a1d2e;
-  --muted:   #6b7280;
-  --green:   #16a34a;
-  --greenbg: #dcfce7;
-  --red:     #dc2626;
-  --yellow:  #fef08a;
-  --radius:  10px;
-  --shadow:  0 2px 14px rgba(74,134,232,0.09);
+  --glass-bg:       rgba(255,255,255,0.10);
+  --glass-bg-hover: rgba(255,255,255,0.16);
+  --glass-border:   rgba(255,255,255,0.22);
+  --glass-border-strong: rgba(255,255,255,0.38);
+  --glass-shine:    rgba(255,255,255,0.55);
+  --glass-shadow:   0 8px 32px rgba(0,0,0,0.28), 0 1.5px 0 rgba(255,255,255,0.18) inset;
+  --glass-shadow-hover: 0 16px 48px rgba(0,0,0,0.38), 0 1.5px 0 rgba(255,255,255,0.28) inset;
+  --blur:           blur(18px) saturate(180%);
+  --blur-sm:        blur(10px) saturate(160%);
+
+  --accent:   #60a5fa;
+  --accent2:  #3b82f6;
+  --accent3:  #93c5fd;
+  --text:     #f0f4ff;
+  --text-dim: rgba(240,244,255,0.65);
+  --text-muted: rgba(240,244,255,0.40);
+  --green:    #4ade80;
+  --greenbg:  rgba(74,222,128,0.15);
+  --red:      #f87171;
+  --yellow:   rgba(253,224,71,0.85);
+  --radius:   18px;
+  --radius-sm: 10px;
 }
 
-body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+/* ── BACKGROUND ── */
+body {
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  color: var(--text);
+  background: #060d1f;
+  overflow-x: hidden;
+}
 
-/* TOPBAR */
+/* Animated mesh gradient background */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(59,130,246,0.28) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 20%, rgba(99,102,241,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 55% at 50% 80%, rgba(16,185,129,0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 70% at 70% 50%, rgba(139,92,246,0.10) 0%, transparent 65%),
+    #060d1f;
+  animation: bgShift 18s ease-in-out infinite alternate;
+}
+@keyframes bgShift {
+  0%   { opacity: 1; filter: hue-rotate(0deg); }
+  100% { opacity: 1; filter: hue-rotate(20deg); }
+}
+
+/* Noise texture overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+.container {
+  position: relative; z-index: 1;
+  max-width: 1120px; margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+/* ── TOPBAR ── */
 .topbar {
-  background: var(--accent); color: #fff;
-  padding: 0 24px; height: 54px;
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  background: rgba(6,13,31,0.55);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0 28px; height: 58px;
   display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 10;
-  box-shadow: 0 2px 10px rgba(74,134,232,0.25);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
 }
-.topbar h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.02em; }
-.topbar small { font-size: 12px; opacity: 0.8; }
+.topbar h1 {
+  font-size: 17px; font-weight: 700;
+  letter-spacing: 0.02em;
+  background: linear-gradient(90deg, #fff 0%, var(--accent3) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topbar small {
+  font-size: 12px; font-weight: 600;
+  background: linear-gradient(90deg, #fff 0%, var(--accent3) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-.container { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+/* ── GLASS MIXIN (applied to cards, add-card, actions) ── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.3s, border-color 0.3s, transform 0.3s;
+}
+/* Top shine line */
+.glass::before {
+  content: '';
+  position: absolute; top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-shine), transparent);
+  pointer-events: none;
+}
+/* Side specular highlight */
+.glass::after {
+  content: '';
+  position: absolute; top: 0; left: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, var(--glass-shine), transparent 60%);
+  pointer-events: none;
+}
 
-/* ADD CARD */
+/* ── ADD CARD ── */
 .add-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 20px 24px;
-  margin-bottom: 20px; box-shadow: var(--shadow);
+  margin-bottom: 18px;
+  padding: 22px 24px;
 }
 .add-card label {
-  font-size: 12px; font-weight: 700; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.07em;
-  display: block; margin-bottom: 8px;
+  font-size: 11px; font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  display: block; margin-bottom: 10px;
 }
 .add-row { display: flex; gap: 10px; }
 .add-row input {
-  flex: 1; height: 42px; padding: 0 14px;
-  border: 1.5px solid var(--border); border-radius: 8px;
-  font-size: 14px; outline: none; background: var(--bg);
-  transition: border-color 0.15s;
+  flex: 1; height: 44px; padding: 0 16px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  font-size: 14px; font-family: 'DM Sans', sans-serif;
+  color: var(--text); outline: none;
+  transition: border-color 0.2s, background 0.2s;
 }
-.add-row input:focus { border-color: var(--accent); background: #fff; }
-.add-row input::placeholder { color: #b0b7c3; }
+.add-row input:focus {
+  border-color: var(--accent);
+  background: rgba(255,255,255,0.12);
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.15);
+}
+.add-row input::placeholder { color: var(--text-muted); }
 
-/* BUTTONS */
+/* ── BUTTONS ── */
 .btn {
-  height: 42px; padding: 0 20px; border-radius: 8px; border: none;
-  font-size: 13px; font-weight: 700; cursor: pointer;
-  transition: background 0.15s, transform 0.08s; white-space: nowrap;
+  height: 44px; padding: 0 20px; border-radius: var(--radius-sm); border: none;
+  font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
 }
-.btn:active { transform: scale(0.97); }
-.btn-blue  { background: var(--accent); color: #fff; }
-.btn-blue:hover  { background: var(--accent2); }
-.btn-ghost { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
-.btn-ghost:hover { background: #eef3fd; }
-.btn-sm { height: 30px; padding: 0 12px; font-size: 12px; border-radius: 6px; }
+.btn:active { transform: scale(0.96); }
+.btn-blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(59,130,246,0.4);
+}
+.btn-blue:hover {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  box-shadow: 0 6px 20px rgba(59,130,246,0.5);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  background: rgba(255,255,255,0.08);
+  color: var(--accent3);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: var(--glass-border-strong);
+  transform: translateY(-1px);
+}
+.btn-sm { height: 30px; padding: 0 12px; font-size: 12px; border-radius: 8px; }
 
-/* PILLS */
+/* ── PILLS ── */
 .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .pill {
   display: flex; align-items: center; gap: 6px;
   padding: 5px 10px 5px 14px; border-radius: 20px;
-  background: #eef3fd; border: 1px solid #c7d9f9;
-  font-size: 13px; color: var(--accent2); font-weight: 600;
+  background: rgba(96,165,250,0.15);
+  border: 1px solid rgba(96,165,250,0.30);
+  font-size: 13px; color: var(--accent3); font-weight: 600;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
 }
 .pill-x {
   background: none; border: none; cursor: pointer;
-  color: #93a8d6; font-size: 16px; line-height: 1;
+  color: rgba(96,165,250,0.5); font-size: 16px; line-height: 1;
   display: flex; align-items: center; padding: 0;
+  transition: color 0.15s;
 }
 .pill-x:hover { color: var(--red); }
 
-/* ACTIONS */
+/* ── ACTIONS BAR ── */
 .actions-bar {
   display: flex; gap: 10px; align-items: center;
   margin-bottom: 20px; flex-wrap: wrap;
 }
-.last-refresh { font-size: 12px; color: var(--muted); margin-left: auto; }
+.last-refresh { font-size: 11px; color: var(--text-muted); margin-left: auto; font-family: 'DM Mono', monospace; }
 
-/* GRID */
+/* ── GRID ── */
 #grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 20px; align-items: start;
 }
 
-/* CARD WRAPPER */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+/* ── CARD ── */
+.card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  position: relative; overflow: hidden;
+  transition: box-shadow 0.35s, border-color 0.35s, transform 0.35s;
+}
+.card:hover {
+  box-shadow: var(--glass-shadow-hover);
+  border-color: var(--glass-border-strong);
+  transform: translateY(-3px);
+}
+/* Shine on top */
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 8%; right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  pointer-events: none; z-index: 1;
+}
+/* Left edge specular */
+.card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; bottom: 0; width: 1px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5), transparent 55%);
+  pointer-events: none; z-index: 1;
+}
 
-/* CARD TOP */
+/* ── CARD TOP ── */
 .card-top {
   display: flex; align-items: center; gap: 8px;
-  padding: 14px 16px 0 16px; flex-wrap: wrap;
+  padding: 16px 16px 0 16px; flex-wrap: wrap;
+  position: relative; z-index: 2;
 }
 .kw-badge {
-  font-size: 13px; font-weight: 800;
-  background: var(--accent); color: #fff;
-  padding: 4px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #fff; padding: 5px 14px; border-radius: 20px;
+  box-shadow: 0 3px 12px rgba(59,130,246,0.40);
+  letter-spacing: 0.01em;
 }
 .kw-count {
-  font-size: 11px; color: var(--accent2);
-  background: #eef3fd; border: 1px solid #c7d9f9;
-  padding: 2px 8px; border-radius: 10px; font-weight: 600;
+  font-size: 11px; color: var(--accent3); font-weight: 600;
+  background: rgba(96,165,250,0.12);
+  border: 1px solid rgba(96,165,250,0.25);
+  padding: 2px 9px; border-radius: 10px;
+  font-family: 'DM Mono', monospace;
 }
 .exact-tag {
   font-size: 10px; font-weight: 700;
-  background: #fef9c3; color: #854d0e;
-  border: 1px solid #fde68a;
-  padding: 2px 7px; border-radius: 10px;
+  background: rgba(251,191,36,0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251,191,36,0.30);
+  padding: 2px 7px; border-radius: 8px;
 }
 .card-refresh { margin-left: auto; }
 
-/* FILTER BUTTONS */
+/* ── FILTER BAR ── */
 .filter-bar {
-  display: flex; gap: 0;
+  display: flex;
   margin: 12px 16px 14px 16px;
-  border-radius: 8px; overflow: hidden;
-  border: 2px solid var(--accent); width: 100%;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--glass-border);
+  background: rgba(0,0,0,0.20);
+  position: relative; z-index: 2;
 }
 .filter-bar button {
-  flex: 1; height: 36px; border: none;
-  font-size: 12px; font-weight: 700; cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  background: #fff; color: var(--accent);
-  border-right: 1px solid var(--accent);
-  letter-spacing: 0.01em;
+  flex: 1; height: 34px; border: none;
+  font-size: 12px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  background: transparent;
+  color: var(--text-dim);
+  border-right: 1px solid var(--glass-border);
 }
 .filter-bar button:last-child { border-right: none; }
-.filter-bar button.active { background: var(--accent); color: #fff; }
-.filter-bar button:not(.active):hover { background: #dce8fb; }
+.filter-bar button.active {
+  background: rgba(59,130,246,0.28);
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.filter-bar button:not(.active):hover {
+  background: rgba(255,255,255,0.07);
+  color: var(--text);
+}
 
-/* ARTICLES */
-.articles { border-top: 1px solid var(--border); }
+/* ── DIVIDER ── */
+.glass-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+  margin: 0;
+}
+
+/* ── ARTICLES ── */
+.articles {}
 .article {
-  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
   display: grid; grid-template-columns: 1fr auto;
-  gap: 6px 12px; align-items: start; transition: background 0.1s;
+  gap: 5px 12px; align-items: start;
+  transition: background 0.15s;
+  position: relative; z-index: 2;
 }
 .article:last-child { border-bottom: none; }
-.article:hover { background: #f6f8ff; }
-.art-meta { font-size: 11px; color: var(--muted); grid-column: 1; }
-.art-title { font-size: 13px; font-weight: 600; line-height: 1.45; grid-column: 1; color: var(--text); }
+.article:hover {
+  background: rgba(255,255,255,0.05);
+}
+.art-meta {
+  font-size: 11px; color: var(--text-muted);
+  grid-column: 1; font-family: 'DM Mono', monospace;
+  font-weight: 400;
+}
+.art-title {
+  font-size: 13px; font-weight: 500; line-height: 1.5;
+  grid-column: 1; color: var(--text);
+}
 .badge-latest {
   font-size: 10px; font-weight: 700;
-  background: var(--greenbg); color: var(--green);
-  padding: 1px 7px; border-radius: 10px;
+  background: var(--greenbg);
+  color: var(--green);
+  border: 1px solid rgba(74,222,128,0.3);
+  padding: 1px 7px; border-radius: 8px;
   display: inline-block; margin-left: 6px; vertical-align: middle;
 }
 .art-link { grid-column: 2; grid-row: 1 / 3; align-self: center; }
 .art-link a {
-  display: inline-block; padding: 5px 11px;
-  background: #eef3fd; color: var(--accent2);
-  border-radius: 6px; font-size: 12px; font-weight: 700;
-  text-decoration: none; white-space: nowrap; transition: background 0.12s;
+  display: inline-block; padding: 5px 12px;
+  background: rgba(59,130,246,0.15);
+  border: 1px solid rgba(59,130,246,0.30);
+  color: var(--accent3);
+  border-radius: 8px; font-size: 12px; font-weight: 600;
+  text-decoration: none; white-space: nowrap;
+  transition: all 0.18s;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
 }
-.art-link a:hover { background: #dce8fb; }
-mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0 1px; }
+.art-link a:hover {
+  background: rgba(59,130,246,0.28);
+  border-color: rgba(96,165,250,0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59,130,246,0.25);
+}
+mark {
+  background: rgba(253,224,71,0.25);
+  color: #fde047;
+  border-radius: 3px; padding: 0 2px;
+}
 
-/* CARD FOOTER */
+/* ── CARD FOOTER ── */
 .card-foot {
-  padding: 9px 16px; border-top: 1px solid var(--border);
-  background: #f8f9ff;
+  padding: 9px 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.12);
   display: flex; align-items: center; justify-content: space-between;
-  font-size: 11px; color: var(--muted);
+  font-size: 11px; color: var(--text-muted);
+  font-family: 'DM Mono', monospace;
+  position: relative; z-index: 2;
 }
 
-/* STATES */
-.msg { padding: 18px 16px; font-size: 13px; color: var(--muted); line-height: 1.6; }
-.msg-err { padding: 14px 16px; font-size: 13px; color: var(--red); background: #fff5f5; }
-.spin-row { padding: 20px 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+/* ── STATES ── */
+.msg {
+  padding: 20px 16px; font-size: 13px;
+  color: var(--text-dim); line-height: 1.7;
+  position: relative; z-index: 2;
+}
+.msg strong { color: var(--accent3); }
+.msg em { color: var(--text-muted); }
+.msg-err {
+  padding: 14px 16px; font-size: 13px;
+  color: #fca5a5;
+  background: rgba(239,68,68,0.10);
+  border-left: 2px solid var(--red);
+  position: relative; z-index: 2;
+}
+.spin-row {
+  padding: 22px 16px; display: flex; align-items: center;
+  gap: 12px; font-size: 13px; color: var(--text-dim);
+  position: relative; z-index: 2;
+}
 .spin {
   width: 18px; height: 18px; flex-shrink: 0;
-  border: 2px solid #dce8fb; border-top-color: var(--accent);
+  border: 2px solid rgba(96,165,250,0.2);
+  border-top-color: var(--accent);
   border-radius: 50%; animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
-.empty .ico { font-size: 40px; margin-bottom: 12px; }
+.empty {
+  text-align: center; padding: 70px 20px;
+  color: var(--text-muted); font-size: 14px;
+}
+.empty .ico { font-size: 44px; margin-bottom: 14px; opacity: 0.7; }
 
-/* AUTO-REFRESH */
+/* ── AUTO-REFRESH ── */
 .auto-refresh-wrap { position: relative; display: inline-flex; align-items: center; }
 .btn-autorefresh {
-  height: 42px; padding: 0 16px; border-radius: 8px;
-  border: 1.5px solid #22c55e; background: #fff;
-  color: #15803d; font-size: 13px; font-weight: 700;
-  cursor: pointer; display: flex; align-items: center; gap: 7px;
-  transition: background 0.15s;
+  height: 44px; padding: 0 16px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(74,222,128,0.30);
+  background: rgba(74,222,128,0.08);
+  color: #4ade80; font-size: 13px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: all 0.2s;
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
 }
-.btn-autorefresh:hover { background: #f0fdf4; }
-.btn-autorefresh.active { background: #22c55e; color: #fff; border-color: #16a34a; }
+.btn-autorefresh:hover {
+  background: rgba(74,222,128,0.15);
+  border-color: rgba(74,222,128,0.5);
+  transform: translateY(-1px);
+}
+.btn-autorefresh.active {
+  background: rgba(74,222,128,0.22);
+  border-color: rgba(74,222,128,0.55);
+  box-shadow: 0 4px 16px rgba(74,222,128,0.20);
+}
 .btn-autorefresh .ar-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: #86efac; flex-shrink: 0;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4ade80; flex-shrink: 0;
 }
 .btn-autorefresh.active .ar-dot {
-  background: #fff;
   animation: pulse 1.2s ease-in-out infinite;
+  box-shadow: 0 0 6px #4ade80;
 }
 @keyframes pulse {
   0%,100% { opacity:1; transform:scale(1); }
-  50%      { opacity:0.4; transform:scale(0.7); }
+  50%      { opacity:0.4; transform:scale(0.65); }
 }
 .ar-dropdown {
-  position: absolute; top: calc(100% + 6px); left: 0;
-  background: #fff; border: 1.5px solid #d1fae5;
-  border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,0.12);
-  min-width: 165px; z-index: 50; overflow: hidden; display: none;
+  position: absolute; top: calc(100% + 8px); left: 0;
+  background: rgba(10,18,40,0.85);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.10) inset;
+  min-width: 170px; z-index: 50; overflow: hidden; display: none;
 }
-.ar-dropdown.open { display: block; }
+.ar-dropdown.open { display: block; animation: dropIn 0.18s ease; }
+@keyframes dropIn {
+  from { opacity:0; transform:translateY(-6px); }
+  to   { opacity:1; transform:translateY(0); }
+}
 .ar-dropdown-title {
-  font-size: 11px; font-weight: 700; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.07em;
-  padding: 10px 14px 6px;
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 12px 14px 6px;
 }
 .ar-option {
   display: flex; align-items: center; gap: 8px;
-  padding: 9px 14px; font-size: 13px; font-weight: 600;
-  cursor: pointer; color: var(--text); transition: background 0.1s;
+  padding: 10px 14px; font-size: 13px; font-weight: 500;
+  cursor: pointer; color: var(--text-dim); transition: background 0.1s;
 }
-.ar-option:hover { background: #f0fdf4; }
-.ar-option.selected { color: #15803d; background: #dcfce7; }
-.ar-option .ar-check { margin-left: auto; font-size: 14px; }
+.ar-option:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.ar-option.selected { color: #4ade80; background: rgba(74,222,128,0.08); }
+.ar-option .ar-check { margin-left: auto; font-size: 13px; }
 .ar-countdown {
-  font-size: 11px; color: #15803d; font-weight: 700;
-  background: #dcfce7; border-radius: 6px; padding: 2px 7px; margin-left: 2px;
+  font-size: 11px; color: #4ade80; font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  background: rgba(74,222,128,0.12);
+  border-radius: 6px; padding: 1px 7px; margin-left: 2px;
 }
 
-/* TOAST */
+/* ── TOAST ── */
 #toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: #1a1d2e; color: #fff; padding: 10px 22px; border-radius: 8px;
-  font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.25s;
-  pointer-events: none; z-index: 999;
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  background: rgba(10,18,40,0.90);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  color: var(--text); padding: 11px 24px; border-radius: 30px;
+  font-size: 13px; font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.12) inset;
+  opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 999;
+  white-space: nowrap;
 }
 #toast.show { opacity: 1; }
 
@@ -269,9 +521,8 @@ mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0
 
 <div class="container">
 
-  <!-- ADD KEYWORD -->
-  <div class="add-card">
-    <label>Add a keyword or topic to track</label>
+  <div class="add-card glass">
+    <label>Track a keyword or topic</label>
     <div class="add-row">
       <input id="kwInput" type="text" placeholder='e.g. Realme P4, Bitcoin, AI regulation, Tamil Nadu' />
       <button class="btn btn-blue" id="addBtn">+ Add</button>
@@ -279,13 +530,11 @@ mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0
     <div class="pills" id="pills"></div>
   </div>
 
-  <!-- ACTIONS BAR -->
   <div class="actions-bar" id="actionsBar" style="display:none">
-    <button class="btn btn-blue" id="refreshAllBtn">&#8635; Refresh All</button>
+    <button class="btn btn-blue"  id="refreshAllBtn">&#8635; Refresh All</button>
     <button class="btn btn-ghost" id="clearAllBtn">&#10005; Clear All</button>
 
-    <!-- AUTO-REFRESH BUTTON + DROPDOWN -->
-    <div class="auto-refresh-wrap" id="arWrap">
+    <div class="auto-refresh-wrap">
       <button class="btn-autorefresh" id="arBtn">
         <span class="ar-dot"></span>
         <span id="arLabel">Auto Refresh</span>
@@ -294,18 +543,17 @@ mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0
       </button>
       <div class="ar-dropdown" id="arDropdown">
         <div class="ar-dropdown-title">Refresh Interval</div>
-        <div class="ar-option" data-interval="0"><span>Off</span><span class="ar-check" id="arCheck-0">&#10003;</span></div>
-        <div class="ar-option" data-interval="30"><span>Every 30 sec</span><span class="ar-check" id="arCheck-30"></span></div>
-        <div class="ar-option" data-interval="60"><span>Every 1 min</span><span class="ar-check" id="arCheck-60"></span></div>
-        <div class="ar-option" data-interval="300"><span>Every 5 min</span><span class="ar-check" id="arCheck-300"></span></div>
-        <div class="ar-option" data-interval="600"><span>Every 10 min</span><span class="ar-check" id="arCheck-600"></span></div>
+        <div class="ar-option" data-interval="0">  <span>Off</span>          <span class="ar-check" id="arCheck-0">&#10003;</span></div>
+        <div class="ar-option" data-interval="30"> <span>Every 30 sec</span> <span class="ar-check" id="arCheck-30"></span></div>
+        <div class="ar-option" data-interval="60"> <span>Every 1 min</span>  <span class="ar-check" id="arCheck-60"></span></div>
+        <div class="ar-option" data-interval="300"><span>Every 5 min</span>  <span class="ar-check" id="arCheck-300"></span></div>
+        <div class="ar-option" data-interval="600"><span>Every 10 min</span> <span class="ar-check" id="arCheck-600"></span></div>
       </div>
     </div>
 
     <span class="last-refresh" id="lastRefresh"></span>
   </div>
 
-  <!-- RESULTS GRID -->
   <div id="grid">
     <div class="empty">
       <div class="ico">🔍</div>
@@ -319,13 +567,10 @@ mark { background: var(--yellow); color: inherit; border-radius: 2px; padding: 0
 
 <script>
 // =============================================================
-//  STORAGE — everything in browser localStorage, private per user
-//  Keywords:      localStorage key 'kw_list'
-//  Auto-refresh:  localStorage key 'ar_interval'
-//  Time filters:  localStorage key 'kw_filters'
-//
-//  When you share the app URL, others open it with a blank slate.
-//  Your keywords and settings are only in YOUR browser.
+//  STORAGE STRATEGY
+//  Keywords       → SERVER (PropertiesService.getUserProperties)
+//  Filter choices → localStorage
+//  Auto-refresh   → localStorage
 // =============================================================
 
 var PAGE = 5;
@@ -342,59 +587,57 @@ var S = {
 function todayISO() {
   var d = new Date();
   return d.getFullYear() + '-'
-    + String(d.getMonth()+1).padStart(2,'0') + '-'
-    + String(d.getDate()).padStart(2,'0');
-}
-
-// ── LOCALSTORAGE HELPERS ──────────────────────────────────────
-function saveKw() {
-  localStorage.setItem('kw_list', JSON.stringify(S.keywords));
-}
-
-function loadKw() {
-  try {
-    var raw = localStorage.getItem('kw_list');
-    return raw ? JSON.parse(raw) : [];
-  } catch(e) { return []; }
+    + String(d.getMonth() + 1).padStart(2, '0') + '-'
+    + String(d.getDate()).padStart(2, '0');
 }
 
 function saveFilters() {
-  localStorage.setItem('kw_filters', JSON.stringify(S.timeFilter));
+  try { localStorage.setItem('kw_filters', JSON.stringify(S.timeFilter)); } catch(e) {}
 }
-
 function loadFilters() {
-  try {
-    var raw = localStorage.getItem('kw_filters');
-    return raw ? JSON.parse(raw) : {};
-  } catch(e) { return {}; }
+  try { var r = localStorage.getItem('kw_filters'); return r ? JSON.parse(r) : {}; } catch(e) { return {}; }
+}
+function saveARInterval(secs) {
+  try { localStorage.setItem('ar_interval', String(secs)); } catch(e) {}
+}
+function loadARInterval() {
+  try { return parseInt(localStorage.getItem('ar_interval') || '0', 10); } catch(e) { return 0; }
 }
 
 // ── INIT ──────────────────────────────────────────────────────
-// Everything loads from localStorage — no server call needed for init
 window.onload = function() {
-  S.keywords   = loadKw();
-  S.timeFilter = loadFilters();
-
-  // Ensure every keyword has a default filter
-  S.keywords.forEach(function(kw) {
-    if (!S.timeFilter[kw]) S.timeFilter[kw] = 'today';
-  });
-
-  render();
-
-  // Restore auto-refresh interval
-  var saved = parseInt(localStorage.getItem('ar_interval') || '0', 10);
-  if (saved > 0) setAutoRefresh(saved);
+  google.script.run
+    .withSuccessHandler(function(kws) {
+      S.keywords   = kws || [];
+      S.timeFilter = loadFilters();
+      S.keywords.forEach(function(kw) {
+        if (!S.timeFilter[kw]) S.timeFilter[kw] = 'today';
+      });
+      render();
+      var saved = loadARInterval();
+      if (saved > 0) setAutoRefresh(saved);
+    })
+    .withFailureHandler(function(err) {
+      console.error('loadKeywords failed:', err);
+      render();
+    })
+    .loadKeywords();
 };
+
+function saveKw() {
+  google.script.run.saveKeywords(S.keywords);
+}
 
 // ── LISTENERS ─────────────────────────────────────────────────
 document.getElementById('addBtn').onclick        = addKeyword;
 document.getElementById('refreshAllBtn').onclick = refreshAll;
 document.getElementById('clearAllBtn').onclick   = clearAll;
-document.getElementById('kwInput').onkeydown     = function(e){ if(e.key==='Enter') addKeyword(); };
+document.getElementById('kwInput').onkeydown = function(e) {
+  if (e.key === 'Enter') addKeyword();
+};
 
 // ── AUTO-REFRESH ──────────────────────────────────────────────
-var AR = { intervalSec:0, timerId:null, counterId:null, remaining:0 };
+var AR = { intervalSec: 0, timerId: null, counterId: null, remaining: 0 };
 
 document.getElementById('arBtn').addEventListener('click', function(e) {
   e.stopPropagation();
@@ -415,9 +658,9 @@ function setAutoRefresh(secs) {
   if (AR.timerId)   { clearInterval(AR.timerId);   AR.timerId   = null; }
   if (AR.counterId) { clearInterval(AR.counterId); AR.counterId = null; }
   AR.intervalSec = secs;
-  localStorage.setItem('ar_interval', secs); // persist in browser
+  saveARInterval(secs);
 
-  [0,30,60,300,600].forEach(function(v) {
+  [0, 30, 60, 300, 600].forEach(function(v) {
     var el  = document.getElementById('arCheck-' + v);
     if (el) el.textContent = (v === secs) ? '✓' : '';
     var row = document.querySelector('[data-interval="' + v + '"]');
@@ -430,17 +673,17 @@ function setAutoRefresh(secs) {
 
   if (secs === 0) {
     btn.classList.remove('active');
-    label.textContent = 'Auto Refresh';
+    label.textContent       = 'Auto Refresh';
     countdown.style.display = 'none';
     showToast('Auto refresh turned off');
     return;
   }
 
   btn.classList.add('active');
-  label.textContent = 'Auto';
+  label.textContent       = 'Auto';
   countdown.style.display = 'inline';
-  AR.remaining = secs;
-  countdown.textContent = fmtSec(secs);
+  AR.remaining            = secs;
+  countdown.textContent   = fmtSec(secs);
 
   AR.counterId = setInterval(function() {
     AR.remaining--;
@@ -453,80 +696,72 @@ function setAutoRefresh(secs) {
     refreshAll();
   }, secs * 1000);
 
-  var lbls = {30:'30s', 60:'1 min', 300:'5 min', 600:'10 min'};
-  showToast('Auto refresh every ' + (lbls[secs] || secs+'s') + ' — all topics');
+  var lbls = { 30: '30s', 60: '1 min', 300: '5 min', 600: '10 min' };
+  showToast('Auto refresh every ' + (lbls[secs] || secs + 's') + ' — all topics');
 }
 
 function fmtSec(s) {
-  if (s >= 60) { var m=Math.floor(s/60), r=s%60; return m+'m'+(r>0?' '+r+'s':''); }
-  return s+'s';
+  if (s >= 60) { var m = Math.floor(s / 60), r = s % 60; return m + 'm' + (r > 0 ? ' ' + r + 's' : ''); }
+  return s + 's';
 }
 
 // ── DELEGATED CLICKS ──────────────────────────────────────────
 document.getElementById('grid').addEventListener('click', function(e) {
   var fb = e.target.closest('[data-filter-kw]');
-  if (fb) {
-    onFilterClick(fb.getAttribute('data-filter-kw'), fb.getAttribute('data-filter-val'));
-    return;
-  }
+  if (fb) { onFilterClick(fb.getAttribute('data-filter-kw'), fb.getAttribute('data-filter-val')); return; }
   var rb = e.target.closest('[data-refresh-kw]');
   if (rb) onRefreshClick(rb.getAttribute('data-refresh-kw'));
 });
-
 document.getElementById('pills').addEventListener('click', function(e) {
   var b = e.target.closest('[data-remove-kw]');
   if (b) removeKeyword(b.getAttribute('data-remove-kw'));
 });
 
-// ── FILTER CLICK — no server call ────────────────────────────
+// ── FILTER ────────────────────────────────────────────────────
 function onFilterClick(kw, val) {
   if (S.timeFilter[kw] === val) return;
   S.timeFilter[kw] = val;
   S.offset[kw]     = 0;
-  saveFilters(); // persist filter choice in browser
+  saveFilters();
   applyFilter(kw);
   renderCard(kw);
-  showToast(val === 'today' ? '⚡ Showing today\'s news only' : '🗓 Showing all available news');
+  showToast(val === 'today' ? '⚡ Today\'s news only' : '🗓 Showing all available news');
 }
 
-// ── APPLY FILTER ─────────────────────────────────────────────
 function applyFilter(kw) {
   var raw    = S.rawPool[kw];
   var filter = S.timeFilter[kw] || 'today';
 
-  if (!raw || !Array.isArray(raw)) {
-    S.pool[kw] = raw;
-    return;
-  }
+  if (!raw || !Array.isArray(raw)) { S.pool[kw] = raw; return; }
 
-  var kwLower = kw.replace(/^"|"$/g,'').trim().toLowerCase();
-  var words   = kwLower.split(/\s+/).filter(function(w){ return w.length > 0; });
+  var kwLower = kw.replace(/^"|"$/g, '').trim().toLowerCase();
+  var words   = kwLower.split(/\s+/).filter(function(w) { return w.length > 0; });
   var today   = todayISO();
 
   var wordRegs = words.map(function(w) {
     var safe = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp('(?<![\\w])' + safe + '(?![\\w])', 'i');
+    return new RegExp('(?<![a-zA-Z0-9])' + safe + '(?![a-zA-Z0-9])', 'i');
   });
 
-  function titleMatches(title) {
+  function matches(title) {
     return wordRegs.every(function(re) { return re.test(title); });
   }
 
   var result = raw.filter(function(item) {
-    if (!titleMatches(item.title)) return false;
+    if (!matches(item.title)) return false;
     if (filter === 'today') return item.isoDate === today;
     return true;
   });
 
   if (!result.length) {
+    var anyDate = raw.filter(function(item) { return matches(item.title); });
     S.pool[kw] = [];
-    var anyDate = raw.filter(function(item){ return titleMatches(item.title); });
     S.pool[kw]._msg = filter === 'today'
       ? '📭 No exact results for <strong>"' + esc(kw) + '"</strong> today.'
         + (anyDate.length
-            ? ' <em>(' + anyDate.length + ' older article' + (anyDate.length>1?'s':'') + ' found — try <strong>🗓 Anytime</strong>)</em>'
-            : ' <em>No articles found even for Anytime — keyword may be too specific.</em>')
-      : '📭 No exact results for <strong>"' + esc(kw) + '"</strong> at all. Try a broader keyword.';
+          ? ' <em>(' + anyDate.length + ' older article' + (anyDate.length > 1 ? 's' : '') + ' — try <strong>🗓 Anytime</strong>)</em>'
+          : ' <em>No results even for Anytime — keyword may be too specific.</em>')
+      : '📭 No exact results for <strong>"' + esc(kw) + '"</strong>. Try a broader keyword.';
   } else {
     S.pool[kw] = result;
   }
@@ -539,18 +774,15 @@ function onRefreshClick(kw) {
   if (Array.isArray(pool) && offset + PAGE < pool.length) {
     S.offset[kw] = offset + PAGE;
     renderCard(kw);
-    showToast('Showing articles ' + (offset+PAGE+1) + '–' + Math.min(offset+PAGE+PAGE, pool.length));
+    showToast('Showing ' + (offset + PAGE + 1) + '–' + Math.min(offset + PAGE + PAGE, pool.length));
   } else {
     showToast('Fetching fresh articles…');
     fetchServer(kw);
   }
 }
 
-function refreshAll() {
-  S.keywords.forEach(fetchServer);
-}
+function refreshAll() { S.keywords.forEach(fetchServer); }
 
-// ── FETCH FROM SERVER ─────────────────────────────────────────
 function fetchServer(kw) {
   S.loading[kw] = true;
   renderCard(kw);
@@ -558,17 +790,13 @@ function fetchServer(kw) {
   google.script.run
     .withSuccessHandler(function(data) {
       S.loading[kw] = false;
-      if (data && data.error) {
-        S.rawPool[kw] = { _err: data.error };
-      } else if (data && data.noResults) {
-        S.rawPool[kw] = { _msg: '📭 ' + data.message };
-      } else {
-        S.rawPool[kw] = Array.isArray(data) ? data : [];
-      }
+      if (data && data.error)     { S.rawPool[kw] = { _err: data.error }; }
+      else if (data && data.noResults) { S.rawPool[kw] = { _msg: '📭 ' + esc(data.message) }; }
+      else { S.rawPool[kw] = Array.isArray(data) ? data : []; }
       S.offset[kw] = 0;
       applyFilter(kw);
       document.getElementById('lastRefresh').textContent =
-        'Last refreshed: ' + new Date().toLocaleTimeString();
+        'refreshed ' + new Date().toLocaleTimeString();
       renderCard(kw);
     })
     .withFailureHandler(function(err) {
@@ -583,9 +811,9 @@ function fetchServer(kw) {
 
 // ── RENDER ────────────────────────────────────────────────────
 function render() {
-  document.getElementById('pills').innerHTML = S.keywords.map(function(kw){
-    return '<div class="pill"><span>'+esc(kw)+'</span>'
-      +'<button class="pill-x" data-remove-kw="'+esc(kw)+'" title="Remove">✕</button></div>';
+  document.getElementById('pills').innerHTML = S.keywords.map(function(kw) {
+    return '<div class="pill"><span>' + esc(kw) + '</span>'
+      + '<button class="pill-x" data-remove-kw="' + esc(kw) + '" title="Remove">✕</button></div>';
   }).join('');
 
   document.getElementById('actionsBar').style.display = S.keywords.length ? 'flex' : 'none';
@@ -595,8 +823,8 @@ function render() {
     g.innerHTML = '<div class="empty"><div class="ico">🔍</div><div>Add a keyword above to start tracking news</div></div>';
     return;
   }
-  g.innerHTML = S.keywords.map(function(kw){
-    return '<div id="'+cardId(kw)+'">'+buildCard(kw)+'</div>';
+  g.innerHTML = S.keywords.map(function(kw) {
+    return '<div id="' + cardId(kw) + '">' + buildCard(kw) + '</div>';
   }).join('');
 }
 
@@ -615,48 +843,48 @@ function buildCard(kw) {
   var isArr   = Array.isArray(pool);
   var total   = isArr ? pool.length : 0;
   var pageEnd = Math.min(offset + PAGE, total);
-  var hasMore = isArr && offset + PAGE < pool.length;
+  var hasMore = isArr && (offset + PAGE) < pool.length;
 
   var countLabel = (total > 0 && !loading)
-    ? '<span class="kw-count">'+(offset+1)+'–'+pageEnd+' / '+total+'</span>' : '';
+    ? '<span class="kw-count">' + (offset + 1) + '–' + pageEnd + ' / ' + total + '</span>' : '';
 
   var top = '<div class="card-top">'
-    + '<span class="kw-badge">'+esc(kw)+'</span>'
+    + '<span class="kw-badge">' + esc(kw) + '</span>'
     + countLabel
     + '<span class="exact-tag">Exact</span>'
-    + '<button class="btn btn-ghost btn-sm card-refresh" data-refresh-kw="'+esc(kw)+'">↻ Refresh</button>'
+    + '<button class="btn btn-ghost btn-sm card-refresh" data-refresh-kw="' + esc(kw) + '">↻</button>'
     + '</div>';
 
-  var filters = '<div class="filter-bar">'
-    + '<button data-filter-kw="'+esc(kw)+'" data-filter-val="today"'
-    + (filter==='today' ? ' class="active"' : '')+'>⚡ As it Happens</button>'
-    + '<button data-filter-kw="'+esc(kw)+'" data-filter-val="anytime"'
-    + (filter==='anytime' ? ' class="active"' : '')+'>🗓 Anytime</button>'
+  var filterBar = '<div class="filter-bar">'
+    + '<button data-filter-kw="' + esc(kw) + '" data-filter-val="today"'
+    + (filter === 'today' ? ' class="active"' : '') + '>⚡ As it Happens</button>'
+    + '<button data-filter-kw="' + esc(kw) + '" data-filter-val="anytime"'
+    + (filter === 'anytime' ? ' class="active"' : '') + '>🗓 Anytime</button>'
     + '</div>';
 
   var body = '';
-  var kwClean = kw.replace(/^"|"$/g,'').trim();
+  var kwClean = kw.replace(/^"|"$/g, '').trim();
 
   if (loading) {
-    body = '<div class="spin-row"><div class="spin"></div>Fetching "'+esc(kw)+'"…</div>';
+    body = '<div class="spin-row"><div class="spin"></div>Fetching "' + esc(kw) + '"…</div>';
   } else if (!pool) {
-    body = '<div class="msg">Click <strong>↻ Refresh</strong> to fetch news.</div>';
+    body = '<div class="msg">Click <strong>↻</strong> to fetch news.</div>';
   } else if (pool._err) {
-    body = '<div class="msg-err">⚠ '+esc(pool._err)+'</div>';
+    body = '<div class="msg-err">⚠ ' + esc(pool._err) + '</div>';
   } else if (pool._msg) {
-    body = '<div class="msg">'+pool._msg+'</div>';
+    body = '<div class="msg">' + pool._msg + '</div>';
   } else if (!total) {
     body = '<div class="msg">No articles to show.</div>';
   } else {
     var slice = pool.slice(offset, offset + PAGE);
     body = '<div class="articles">'
-      + slice.map(function(item, i){
+      + slice.map(function(item, i) {
           return '<div class="article">'
-            +'<div class="art-meta">'+esc(item.source)+(item.date?' · '+esc(item.date):'')+'</div>'
-            +'<div class="art-title">'+hlWord(item.title, kwClean)
-            +(i===0 && offset===0 ? '<span class="badge-latest">Latest</span>' : '')+'</div>'
-            +'<div class="art-link"><a href="'+esc(item.url)+'" target="_blank" rel="noopener">Read ↗</a></div>'
-            +'</div>';
+            + '<div class="art-meta">' + esc(item.source) + (item.date ? ' · ' + esc(item.date) : '') + '</div>'
+            + '<div class="art-title">' + hlWord(item.title, kwClean)
+            + (i === 0 && offset === 0 ? '<span class="badge-latest">Latest</span>' : '') + '</div>'
+            + '<div class="art-link"><a href="' + esc(item.url) + '" target="_blank" rel="noopener">Read ↗</a></div>'
+            + '</div>';
         }).join('')
       + '</div>';
   }
@@ -664,22 +892,32 @@ function buildCard(kw) {
   var foot = '';
   if (isArr && total > 0 && !loading) {
     foot = '<div class="card-foot">'
-      +(hasMore ? '<span>'+(total-pageEnd)+' more in pool</span>' : '<span>End of pool</span>')
-      +'<span>'+pageEnd+' / '+total+'</span>'
-      +'</div>';
+      + (hasMore ? '<span>' + (total - pageEnd) + ' more in pool</span>' : '<span>End of pool</span>')
+      + '<span>' + pageEnd + ' / ' + total + '</span>'
+      + '</div>';
   }
 
-  return '<div class="card">'+top+filters+body+foot+'</div>';
+  return '<div class="card">' + top + filterBar + body + foot + '</div>';
 }
 
 // ── HIGHLIGHT ─────────────────────────────────────────────────
 function hlWord(title, kw) {
-  var words  = kw.trim().split(/\s+/);
-  var result = esc(title);
-  words.forEach(function(w){
+  var words = kw.trim().split(/\s+/);
+  var result = title;
+  var placeholders = [];
+  words.forEach(function(w) {
     if (!w) return;
-    var safe = w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    result   = result.replace(new RegExp('('+safe+')','gi'),'<mark>$1</mark>');
+    var safe = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    var re   = new RegExp('(?<![a-zA-Z0-9])(' + safe + ')(?![a-zA-Z0-9])', 'gi');
+    result = result.replace(re, function(match) {
+      var idx = placeholders.length;
+      placeholders.push(match);
+      return '\x00' + idx + '\x00';
+    });
+  });
+  result = esc(result);
+  placeholders.forEach(function(original, idx) {
+    result = result.split('\x00' + idx + '\x00').join('<mark>' + esc(original) + '</mark>');
   });
   return result;
 }
@@ -689,17 +927,15 @@ function addKeyword() {
   var inp = document.getElementById('kwInput');
   var kw  = inp.value.trim();
   if (!kw) return;
-  if (S.keywords.indexOf(kw) !== -1) { showToast('Already tracking this keyword'); inp.value=''; return; }
+  if (S.keywords.indexOf(kw) !== -1) { showToast('Already tracking this keyword'); inp.value = ''; return; }
   S.keywords.push(kw);
   S.timeFilter[kw] = 'today';
   inp.value = '';
-  saveKw();
-  saveFilters();
-  render();
+  saveKw(); saveFilters(); render();
 }
 
 function removeKeyword(kw) {
-  S.keywords = S.keywords.filter(function(k){ return k!==kw; });
+  S.keywords = S.keywords.filter(function(k) { return k !== kw; });
   delete S.rawPool[kw]; delete S.pool[kw];
   delete S.offset[kw];  delete S.timeFilter[kw];
   saveKw(); saveFilters(); render();
@@ -707,23 +943,24 @@ function removeKeyword(kw) {
 
 function clearAll() {
   if (!confirm('Remove all keywords?')) return;
-  S.keywords=[]; S.rawPool={}; S.pool={}; S.offset={}; S.timeFilter={};
+  S.keywords = []; S.rawPool = {}; S.pool = {}; S.offset = {}; S.timeFilter = {};
+  setAutoRefresh(0);
   saveKw(); saveFilters(); render();
 }
 
 // ── UTILS ─────────────────────────────────────────────────────
-function cardId(kw) { return 'c-'+btoa(unescape(encodeURIComponent(kw))); }
+function cardId(kw) { return 'c-' + btoa(unescape(encodeURIComponent(kw))); }
 
 function esc(s) {
-  return String(s||'')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function showToast(msg) {
   var t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
 }
 </script>
 </body>
