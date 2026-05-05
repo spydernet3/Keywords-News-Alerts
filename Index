@@ -3,72 +3,82 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <title>Keywords Alert</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
+/* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button { font-family: inherit; }
 
+/* ── TOKENS ── */
 :root {
-  --glass-bg:            rgba(255,255,255,0.10);
-  --glass-bg-hover:      rgba(255,255,255,0.16);
-  --glass-border:        rgba(255,255,255,0.22);
-  --glass-border-strong: rgba(255,255,255,0.38);
-  --glass-shine:         rgba(255,255,255,0.55);
-  --glass-shadow:        0 8px 32px rgba(0,0,0,0.28), 0 1.5px 0 rgba(255,255,255,0.18) inset;
-  --glass-shadow-hover:  0 16px 48px rgba(0,0,0,0.38), 0 1.5px 0 rgba(255,255,255,0.28) inset;
-  --blur:    blur(18px) saturate(180%);
+  --glass-bg:     rgba(255,255,255,0.09);
+  --glass-border: rgba(255,255,255,0.18);
+  --glass-border-hi: rgba(255,255,255,0.35);
+  --glass-shine:  rgba(255,255,255,0.50);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.30), 0 1px 0 rgba(255,255,255,0.15) inset;
+  --glass-shadow-hover: 0 16px 48px rgba(0,0,0,0.42), 0 1px 0 rgba(255,255,255,0.25) inset;
+  --blur:    blur(20px) saturate(180%);
   --blur-sm: blur(10px) saturate(160%);
-  --accent:       #60a5fa;
-  --accent2:      #3b82f6;
-  --accent3:      #93c5fd;
-  --text:         #f0f4ff;
-  --text-dim:     rgba(240,244,255,0.65);
-  --text-muted:   rgba(240,244,255,0.40);
-  --green:        #4ade80;
-  --greenbg:      rgba(74,222,128,0.15);
-  --red:          #f87171;
-  --yellow:       rgba(253,224,71,0.85);
-  --radius:       18px;
-  --radius-sm:    10px;
+
+  --accent:     #60a5fa;
+  --accent2:    #3b82f6;
+  --accent3:    #93c5fd;
+  --text:       #eef2ff;
+  --text-dim:   rgba(238,242,255,0.62);
+  --text-muted: rgba(238,242,255,0.38);
+  --green:      #4ade80;
+  --greenbg:    rgba(74,222,128,0.14);
+  --red:        #f87171;
+  --yellow-bg:  rgba(253,224,71,0.22);
+  --yellow-txt: #fde047;
+  --radius:     18px;
+  --radius-sm:  10px;
 }
 
+/* ── BACKGROUND ── */
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   min-height: 100vh; color: var(--text);
   background: #060d1f; overflow-x: hidden;
 }
 body::before {
-  content: ''; position: fixed; inset: 0; z-index: 0;
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(59,130,246,0.28) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 50% at 85% 20%, rgba(99,102,241,0.22) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 55% at 50% 80%, rgba(16,185,129,0.14) 0%, transparent 60%),
-    radial-gradient(ellipse 90% 70% at 70% 50%, rgba(139,92,246,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(59,130,246,0.26) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 20%, rgba(99,102,241,0.20) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 55% at 50% 82%, rgba(16,185,129,0.13) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 70% at 68% 50%, rgba(139,92,246,0.09) 0%, transparent 65%),
     #060d1f;
-  animation: bgShift 18s ease-in-out infinite alternate;
+  animation: bgShift 22s ease-in-out infinite alternate;
 }
 @keyframes bgShift {
-  0%   { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(20deg); }
+  0%   { filter: hue-rotate(0deg) brightness(1); }
+  100% { filter: hue-rotate(18deg) brightness(1.04); }
 }
 body::after {
   content: ''; position: fixed; inset: 0; z-index: 0;
-  pointer-events: none; opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-size: 200px;
+  pointer-events: none; opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
 }
 
-.container { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 24px 16px 80px; }
+/* ── LAYOUT ── */
+.container {
+  position: relative; z-index: 1;
+  max-width: 1120px; margin: 0 auto; padding: 24px 16px 80px;
+}
 
-/* TOPBAR */
+/* ── TOPBAR ── */
 .topbar {
   position: sticky; top: 0; z-index: 100;
   backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
-  background: rgba(6,13,31,0.55);
+  background: rgba(6,13,31,0.60);
   border-bottom: 1px solid var(--glass-border);
   padding: 0 28px; height: 58px;
   display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.28);
 }
 .topbar h1 {
   font-size: 17px; font-weight: 700; letter-spacing: 0.02em;
@@ -81,27 +91,26 @@ body::after {
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
-/* GLASS */
+/* ── GLASS BASE ── */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius); box-shadow: var(--glass-shadow);
   position: relative; overflow: hidden;
-  transition: box-shadow 0.3s, border-color 0.3s, transform 0.3s;
 }
 .glass::before {
-  content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
   background: linear-gradient(90deg, transparent, var(--glass-shine), transparent);
-  pointer-events: none;
+  pointer-events: none; z-index: 1;
 }
 .glass::after {
   content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 1px;
-  background: linear-gradient(180deg, var(--glass-shine), transparent 60%);
-  pointer-events: none;
+  background: linear-gradient(180deg, var(--glass-shine), transparent 55%);
+  pointer-events: none; z-index: 1;
 }
 
-/* ADD CARD */
+/* ── ADD CARD ── */
 .add-card { margin-bottom: 18px; padding: 22px 24px; }
 .add-card label {
   font-size: 11px; font-weight: 600; color: var(--text-muted);
@@ -110,161 +119,275 @@ body::after {
 .add-row { display: flex; gap: 10px; }
 .add-row input {
   flex: 1; height: 44px; padding: 0 16px;
-  background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm); font-size: 14px; font-family: 'DM Sans', sans-serif;
-  color: var(--text); outline: none; transition: border-color 0.2s, background 0.2s;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+  font-size: 14px; font-family: inherit; color: var(--text); outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 .add-row input:focus {
   border-color: var(--accent); background: rgba(255,255,255,0.12);
-  box-shadow: 0 0 0 3px rgba(96,165,250,0.15);
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.18);
 }
 .add-row input::placeholder { color: var(--text-muted); }
 
-/* BUTTONS */
+/* ── BUTTONS ── */
 .btn {
   height: 44px; padding: 0 20px; border-radius: var(--radius-sm); border: none;
-  font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; font-family: inherit;
   cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
 }
-.btn:active { transform: scale(0.96); }
-.btn-blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; box-shadow: 0 4px 14px rgba(59,130,246,0.4); }
-.btn-blue:hover { background: linear-gradient(135deg,#60a5fa,#3b82f6); box-shadow: 0 6px 20px rgba(59,130,246,0.5); transform: translateY(-1px); }
-.btn-ghost { background: rgba(255,255,255,0.08); color: var(--accent3); border: 1px solid var(--glass-border); backdrop-filter: var(--blur-sm); -webkit-backdrop-filter: var(--blur-sm); }
-.btn-ghost:hover { background: rgba(255,255,255,0.14); border-color: var(--glass-border-strong); transform: translateY(-1px); }
-.btn-sm { height: 30px; padding: 0 12px; font-size: 12px; border-radius: 8px; }
-
-/* PILLS */
-.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.pill {
-  display: flex; align-items: center; gap: 6px;
-  padding: 5px 10px 5px 14px; border-radius: 20px;
-  background: rgba(96,165,250,0.15); border: 1px solid rgba(96,165,250,0.30);
-  font-size: 13px; color: var(--accent3); font-weight: 600;
+.btn:active { transform: scale(0.96) !important; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+.btn-blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff;
+  box-shadow: 0 4px 14px rgba(59,130,246,0.38);
+}
+.btn-blue:not(:disabled):hover {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  box-shadow: 0 6px 20px rgba(59,130,246,0.50); transform: translateY(-1px);
+}
+.btn-ghost {
+  background: rgba(255,255,255,0.08); color: var(--accent3);
+  border: 1px solid var(--glass-border);
   backdrop-filter: var(--blur-sm); -webkit-backdrop-filter: var(--blur-sm);
 }
+.btn-ghost:not(:disabled):hover {
+  background: rgba(255,255,255,0.14); border-color: var(--glass-border-hi);
+  transform: translateY(-1px);
+}
+.btn-sm { height: 30px; padding: 0 12px; font-size: 12px; border-radius: 8px; }
+
+/* ── KEYWORD PILLS ── */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px 5px 14px; border-radius: 20px;
+  background: rgba(96,165,250,0.14); border: 1px solid rgba(96,165,250,0.28);
+  font-size: 13px; color: var(--accent3); font-weight: 600;
+  backdrop-filter: var(--blur-sm); -webkit-backdrop-filter: var(--blur-sm);
+  max-width: 240px;
+}
+.pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pill-x {
   background: none; border: none; cursor: pointer;
-  color: rgba(96,165,250,0.5); font-size: 16px; line-height: 1;
-  display: flex; align-items: center; padding: 0; transition: color 0.15s;
+  color: rgba(96,165,250,0.45); font-size: 16px; line-height: 1;
+  display: flex; align-items: center; padding: 0; flex-shrink: 0;
+  transition: color 0.15s;
 }
 .pill-x:hover { color: var(--red); }
 
-/* ACTIONS BAR */
-.actions-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+/* ── ACTIONS BAR ── */
+.actions-bar {
+  display: flex; gap: 10px; align-items: center;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
 .last-refresh { font-size: 11px; color: var(--text-muted); margin-left: auto; font-family: 'DM Mono', monospace; }
 
-/* GRID */
-#grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; align-items: start; }
+/* ── GRID ── */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px; align-items: start;
+}
 
-/* CARD */
+/* ── CARD ── */
 .card {
   background: var(--glass-bg);
   backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
   border: 1px solid var(--glass-border); border-radius: var(--radius);
   box-shadow: var(--glass-shadow); position: relative; overflow: hidden;
-  transition: box-shadow 0.35s, border-color 0.35s, transform 0.35s;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
-.card:hover { box-shadow: var(--glass-shadow-hover); border-color: var(--glass-border-strong); transform: translateY(-3px); }
+.card:hover {
+  box-shadow: var(--glass-shadow-hover);
+  border-color: var(--glass-border-hi); transform: translateY(-3px);
+}
 .card::before {
   content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
   pointer-events: none; z-index: 1;
 }
 .card::after {
   content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 1px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.5), transparent 55%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.45), transparent 55%);
   pointer-events: none; z-index: 1;
 }
 
-/* CARD TOP */
-.card-top { display: flex; align-items: center; gap: 8px; padding: 16px 16px 0 16px; flex-wrap: wrap; position: relative; z-index: 2; }
-.kw-badge { font-size: 12px; font-weight: 700; background: linear-gradient(135deg,#3b82f6,#6366f1); color: #fff; padding: 5px 14px; border-radius: 20px; box-shadow: 0 3px 12px rgba(59,130,246,0.40); letter-spacing: 0.01em; }
-.kw-count { font-size: 11px; color: var(--accent3); font-weight: 600; background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.25); padding: 2px 9px; border-radius: 10px; font-family: 'DM Mono', monospace; }
-.exact-tag { font-size: 10px; font-weight: 700; background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.30); padding: 2px 7px; border-radius: 8px; }
-.card-refresh { margin-left: auto; }
+/* ── CARD TOP ── */
+.card-top {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 16px 16px 0; position: relative; z-index: 2;
+}
+.kw-badge {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.01em;
+  background: linear-gradient(135deg, #3b82f6, #6366f1); color: #fff;
+  padding: 5px 14px; border-radius: 20px;
+  box-shadow: 0 3px 12px rgba(59,130,246,0.38);
+  max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.kw-count {
+  font-size: 11px; color: var(--accent3); font-weight: 600;
+  background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.24);
+  padding: 2px 9px; border-radius: 10px; font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+.exact-tag {
+  font-size: 10px; font-weight: 700;
+  background: rgba(251,191,36,0.14); color: #fbbf24;
+  border: 1px solid rgba(251,191,36,0.28); padding: 2px 7px; border-radius: 8px;
+}
+.card-top .btn-sm { margin-left: auto; flex-shrink: 0; }
 
-/* FILTER BAR */
+/* ── FILTER BAR ── */
 .filter-bar {
-  display: flex; margin: 12px 16px 14px 16px;
+  display: flex; margin: 12px 16px 14px;
   border-radius: 10px; overflow: hidden;
   border: 1px solid var(--glass-border);
-  background: rgba(0,0,0,0.20); position: relative; z-index: 2;
+  background: rgba(0,0,0,0.22); position: relative; z-index: 2;
 }
 .filter-bar button {
-  flex: 1; height: 34px; border: none;
-  font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif;
-  cursor: pointer; transition: background 0.2s, color 0.2s;
+  flex: 1; height: 34px; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 600; font-family: inherit;
+  transition: background 0.18s, color 0.18s;
   background: transparent; color: var(--text-dim);
   border-right: 1px solid var(--glass-border);
 }
 .filter-bar button:last-child { border-right: none; }
-.filter-bar button.active { background: rgba(59,130,246,0.28); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.15); }
+.filter-bar button.active {
+  background: rgba(59,130,246,0.28); color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14);
+}
 .filter-bar button:not(.active):hover { background: rgba(255,255,255,0.07); color: var(--text); }
 
-/* ARTICLES */
+/* ── ARTICLES ── */
+.articles { border-top: 1px solid rgba(255,255,255,0.06); }
 .article {
-  padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,0.055);
   display: grid; grid-template-columns: 1fr auto;
-  gap: 5px 12px; align-items: start; transition: background 0.15s; position: relative; z-index: 2;
+  gap: 5px 12px; align-items: start;
+  transition: background 0.13s; position: relative; z-index: 2;
 }
 .article:last-child { border-bottom: none; }
-.article:hover { background: rgba(255,255,255,0.05); }
+.article:hover { background: rgba(255,255,255,0.048); }
+
 .art-meta { font-size: 11px; color: var(--text-muted); grid-column: 1; font-family: 'DM Mono', monospace; }
-.art-title { font-size: 13px; font-weight: 500; line-height: 1.5; grid-column: 1; color: var(--text); }
-.badge-latest { font-size: 10px; font-weight: 700; background: var(--greenbg); color: var(--green); border: 1px solid rgba(74,222,128,0.3); padding: 1px 7px; border-radius: 8px; display: inline-block; margin-left: 6px; vertical-align: middle; }
+.art-title { font-size: 13px; font-weight: 500; line-height: 1.5; grid-column: 1; color: var(--text); word-break: break-word; }
+.badge-latest {
+  font-size: 10px; font-weight: 700;
+  background: var(--greenbg); color: var(--green);
+  border: 1px solid rgba(74,222,128,0.28);
+  padding: 1px 7px; border-radius: 8px;
+  display: inline-block; margin-left: 6px; vertical-align: middle;
+}
 .art-link { grid-column: 2; grid-row: 1 / 3; align-self: center; }
 .art-link a {
   display: inline-block; padding: 5px 12px;
-  background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.30);
+  background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.28);
   color: var(--accent3); border-radius: 8px; font-size: 12px; font-weight: 600;
-  text-decoration: none; white-space: nowrap; transition: all 0.18s;
+  text-decoration: none; white-space: nowrap;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
   backdrop-filter: var(--blur-sm); -webkit-backdrop-filter: var(--blur-sm);
 }
-.art-link a:hover { background: rgba(59,130,246,0.28); border-color: rgba(96,165,250,0.5); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,0.25); }
-mark { background: rgba(253,224,71,0.25); color: #fde047; border-radius: 3px; padding: 0 2px; }
+.art-link a:hover {
+  background: rgba(59,130,246,0.26); border-color: rgba(96,165,250,0.48);
+  transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,0.22);
+}
+mark { background: var(--yellow-bg); color: var(--yellow-txt); border-radius: 3px; padding: 0 2px; }
 
-/* CARD FOOTER */
-.card-foot { padding: 9px 16px; border-top: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; position: relative; z-index: 2; }
+/* ── CARD FOOTER ── */
+.card-foot {
+  padding: 9px 16px; border-top: 1px solid rgba(255,255,255,0.055);
+  background: rgba(0,0,0,0.13);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; color: var(--text-muted);
+  font-family: 'DM Mono', monospace; position: relative; z-index: 2;
+}
 
-/* STATES */
-.msg { padding: 20px 16px; font-size: 13px; color: var(--text-dim); line-height: 1.7; position: relative; z-index: 2; }
-.msg strong { color: var(--accent3); }
-.msg em { color: var(--text-muted); }
-.msg-err { padding: 14px 16px; font-size: 13px; color: #fca5a5; background: rgba(239,68,68,0.10); border-left: 2px solid var(--red); position: relative; z-index: 2; }
-.spin-row { padding: 22px 16px; display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-dim); position: relative; z-index: 2; }
-.spin { width: 18px; height: 18px; flex-shrink: 0; border: 2px solid rgba(96,165,250,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+/* ── STATE MESSAGES ── */
+.msg {
+  padding: 20px 16px; font-size: 13px; color: var(--text-dim);
+  line-height: 1.7; position: relative; z-index: 2;
+}
+.msg strong { color: var(--accent3); font-weight: 600; }
+.msg em { color: var(--text-muted); font-style: normal; }
+
+.msg-err {
+  padding: 14px 16px; font-size: 13px; color: #fca5a5;
+  background: rgba(239,68,68,0.09); border-left: 2px solid var(--red);
+  position: relative; z-index: 2;
+}
+
+.spin-row {
+  padding: 22px 16px; display: flex; align-items: center;
+  gap: 12px; font-size: 13px; color: var(--text-dim); position: relative; z-index: 2;
+}
+.spin {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border: 2px solid rgba(96,165,250,0.18); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.72s linear infinite;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
-.empty { text-align: center; padding: 70px 20px; color: var(--text-muted); font-size: 14px; }
-.empty .ico { font-size: 44px; margin-bottom: 14px; opacity: 0.7; }
 
-/* AUTO-REFRESH */
+.empty { text-align: center; padding: 72px 20px; color: var(--text-muted); font-size: 14px; }
+.empty .ico { font-size: 46px; margin-bottom: 14px; opacity: 0.65; }
+
+/* ── AUTO-REFRESH ── */
 .auto-refresh-wrap { position: relative; display: inline-flex; align-items: center; }
-.btn-autorefresh { height: 44px; padding: 0 16px; border-radius: var(--radius-sm); border: 1px solid rgba(74,222,128,0.30); background: rgba(74,222,128,0.08); color: #4ade80; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; backdrop-filter: var(--blur-sm); -webkit-backdrop-filter: var(--blur-sm); }
-.btn-autorefresh:hover { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.5); transform: translateY(-1px); }
-.btn-autorefresh.active { background: rgba(74,222,128,0.22); border-color: rgba(74,222,128,0.55); box-shadow: 0 4px 16px rgba(74,222,128,0.20); }
-.btn-autorefresh .ar-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
-.btn-autorefresh.active .ar-dot { animation: pulse 1.2s ease-in-out infinite; box-shadow: 0 0 6px #4ade80; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.65);} }
-.ar-dropdown { position: absolute; top: calc(100% + 8px); left: 0; background: rgba(10,18,40,0.85); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--glass-border); border-radius: 14px; box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.10) inset; min-width: 170px; z-index: 50; overflow: hidden; display: none; }
-.ar-dropdown.open { display: block; animation: dropIn 0.18s ease; }
-@keyframes dropIn { from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);} }
-.ar-dropdown-title { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 12px 14px 6px; }
-.ar-option { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text-dim); transition: background 0.1s; }
-.ar-option:hover { background: rgba(255,255,255,0.06); color: var(--text); }
-.ar-option.selected { color: #4ade80; background: rgba(74,222,128,0.08); }
-.ar-option .ar-check { margin-left: auto; font-size: 13px; }
-.ar-countdown { font-size: 11px; color: #4ade80; font-weight: 600; font-family: 'DM Mono', monospace; background: rgba(74,222,128,0.12); border-radius: 6px; padding: 1px 7px; margin-left: 2px; }
+.btn-autorefresh {
+  height: 44px; padding: 0 16px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(74,222,128,0.28);
+  background: rgba(74,222,128,0.08); color: var(--green);
+  font-size: 13px; font-weight: 600; font-family: inherit;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.2s;
+  backdrop-filter: var(--blur-sm); -webkit-backdrop-filter: var(--blur-sm);
+}
+.btn-autorefresh:hover { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.48); transform: translateY(-1px); }
+.btn-autorefresh.active { background: rgba(74,222,128,0.20); border-color: rgba(74,222,128,0.52); box-shadow: 0 4px 16px rgba(74,222,128,0.18); }
+.ar-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; transition: box-shadow 0.3s; }
+.btn-autorefresh.active .ar-dot { animation: pulse 1.2s ease-in-out infinite; box-shadow: 0 0 6px var(--green); }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.38;transform:scale(0.6);} }
 
-/* TOAST */
-#toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: rgba(10,18,40,0.90); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--glass-border); color: var(--text); padding: 11px 24px; border-radius: 30px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.12) inset; opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 999; white-space: nowrap; }
+.ar-dropdown {
+  position: absolute; top: calc(100% + 8px); left: 0;
+  background: rgba(8,16,38,0.92);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border); border-radius: 14px;
+  box-shadow: 0 18px 52px rgba(0,0,0,0.50), 0 1px 0 rgba(255,255,255,0.09) inset;
+  min-width: 172px; z-index: 200; overflow: hidden; display: none;
+}
+.ar-dropdown.open { display: block; animation: dropIn 0.17s ease; }
+@keyframes dropIn { from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);} }
+.ar-dropdown-title { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 12px 14px 6px; }
+.ar-option { display: flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text-dim); transition: background 0.12s; }
+.ar-option:hover { background: rgba(255,255,255,0.055); color: var(--text); }
+.ar-option.selected { color: var(--green); background: rgba(74,222,128,0.08); }
+.ar-option .ar-check { margin-left: auto; font-size: 13px; }
+.ar-countdown { font-size: 11px; color: var(--green); font-weight: 600; font-family: 'DM Mono', monospace; background: rgba(74,222,128,0.11); border-radius: 6px; padding: 1px 7px; margin-left: 2px; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(0);
+  background: rgba(8,16,38,0.92);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border); color: var(--text);
+  padding: 11px 24px; border-radius: 30px; font-size: 13px; font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.42), 0 1px 0 rgba(255,255,255,0.10) inset;
+  opacity: 0; transition: opacity 0.24s ease, transform 0.24s ease;
+  pointer-events: none; z-index: 9999; white-space: nowrap; max-width: 90vw;
+}
 #toast.show { opacity: 1; }
 
+/* ── RESPONSIVE ── */
 @media (max-width: 560px) {
   .article { grid-template-columns: 1fr; }
   .art-link { grid-column: 1; grid-row: auto; }
   .actions-bar { flex-direction: column; align-items: flex-start; }
   .last-refresh { margin-left: 0; }
   #grid { grid-template-columns: 1fr; }
+  .topbar { padding: 0 16px; }
+  .topbar small { display: none; }
 }
 </style>
 </head>
@@ -280,7 +403,8 @@ mark { background: rgba(253,224,71,0.25); color: #fde047; border-radius: 3px; pa
   <div class="add-card glass">
     <label>Track a keyword or topic</label>
     <div class="add-row">
-      <input id="kwInput" type="text" placeholder='e.g. Realme P4, Bitcoin, AI regulation, Tamil Nadu' />
+      <input id="kwInput" type="text" maxlength="100"
+        placeholder="e.g. Realme P4, Bitcoin, AI regulation, Tamil Nadu" autocomplete="off"/>
       <button class="btn btn-blue" id="addBtn">+ Add</button>
     </div>
     <div class="pills" id="pills"></div>
@@ -289,23 +413,25 @@ mark { background: rgba(253,224,71,0.25); color: #fde047; border-radius: 3px; pa
   <div class="actions-bar" id="actionsBar" style="display:none">
     <button class="btn btn-blue"  id="refreshAllBtn">&#8635; Refresh All</button>
     <button class="btn btn-ghost" id="clearAllBtn">&#10005; Clear All</button>
+
     <div class="auto-refresh-wrap">
-      <button class="btn-autorefresh" id="arBtn">
+      <button class="btn-autorefresh" id="arBtn" aria-haspopup="listbox" aria-expanded="false">
         <span class="ar-dot"></span>
         <span id="arLabel">Auto Refresh</span>
-        <span id="arCountdown" class="ar-countdown" style="display:none"></span>
+        <span id="arCountdown" class="ar-countdown" style="display:none" aria-live="polite"></span>
         &#9662;
       </button>
-      <div class="ar-dropdown" id="arDropdown">
+      <div class="ar-dropdown" id="arDropdown" role="listbox">
         <div class="ar-dropdown-title">Refresh Interval</div>
-        <div class="ar-option" data-interval="0">  <span>Off</span>          <span class="ar-check" id="arCheck-0">&#10003;</span></div>
-        <div class="ar-option" data-interval="30"> <span>Every 30 sec</span> <span class="ar-check" id="arCheck-30"></span></div>
-        <div class="ar-option" data-interval="60"> <span>Every 1 min</span>  <span class="ar-check" id="arCheck-60"></span></div>
-        <div class="ar-option" data-interval="300"><span>Every 5 min</span>  <span class="ar-check" id="arCheck-300"></span></div>
-        <div class="ar-option" data-interval="600"><span>Every 10 min</span> <span class="ar-check" id="arCheck-600"></span></div>
+        <div class="ar-option" data-interval="0"   role="option"><span>Off</span>           <span class="ar-check" id="arCheck-0">&#10003;</span></div>
+        <div class="ar-option" data-interval="30"  role="option"><span>Every 30 sec</span>  <span class="ar-check" id="arCheck-30"></span></div>
+        <div class="ar-option" data-interval="60"  role="option"><span>Every 1 min</span>   <span class="ar-check" id="arCheck-60"></span></div>
+        <div class="ar-option" data-interval="300" role="option"><span>Every 5 min</span>   <span class="ar-check" id="arCheck-300"></span></div>
+        <div class="ar-option" data-interval="600" role="option"><span>Every 10 min</span>  <span class="ar-check" id="arCheck-600"></span></div>
       </div>
     </div>
-    <span class="last-refresh" id="lastRefresh"></span>
+
+    <span class="last-refresh" id="lastRefresh" aria-live="polite"></span>
   </div>
 
   <div id="grid">
@@ -317,30 +443,28 @@ mark { background: rgba(253,224,71,0.25); color: #fde047; border-radius: 3px; pa
 
 </div>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
-// =============================================================
-//  HOW PRIVACY WORKS
-//  ─────────────────────────────────────────────────────────
-//  On first visit, a random unique ID (UID) is generated and
-//  saved in localStorage. This UID is passed to the server
-//  with every save/load call.
-//
-//  Server stores keywords as: ScriptProperties["kw_<uid>"]
-//
-//  Result: Each browser gets its own private keyword list.
-//  User A's keywords are 100% invisible to User B.
-//  No Google login required.
-//
-//  ⚠️ If a user clears their browser data, their UID is lost
-//  and they start fresh. This is the only known trade-off.
-// =============================================================
+(function() {
+'use strict';
 
-var PAGE = 5;
+// =============================================================
+//  CONSTANTS
+// =============================================================
+var PAGE       = 5;
+var MAX_KW     = 30;
+var MAX_KW_LEN = 100;
+var UID_KEY    = 'kwa_uid';
+var FILTER_KEY = 'kwa_filters';
+var AR_KEY     = 'kwa_ar';
 
+// =============================================================
+//  STATE
+// =============================================================
 var S = {
-  uid:        '',    // unique browser ID — set on init
+  uid:        null,
+  ready:      false,
   keywords:   [],
   rawPool:    {},
   pool:       {},
@@ -349,257 +473,457 @@ var S = {
   timeFilter: {}
 };
 
-// ── UNIQUE ID HELPERS ─────────────────────────────────────────
-// Generates a random 32-char alphanumeric ID
-function genUID() {
-  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var id = '';
-  for (var i = 0; i < 32; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return id;
-}
-
-// Gets existing UID from localStorage or creates a new one
-function getOrCreateUID() {
+// =============================================================
+//  UID — hash + localStorage dual persistence
+// =============================================================
+function readUIDFromHash() {
   try {
-    var uid = localStorage.getItem('kw_uid');
-    if (!uid || uid.length < 8) {
-      uid = genUID();
-      localStorage.setItem('kw_uid', uid);
+    var h = window.location.hash;
+    if (h && h.indexOf('u=') !== -1) {
+      var parts = h.replace(/^[#?]+/, '').split('&');
+      for (var i = 0; i < parts.length; i++) {
+        var kv = parts[i].split('=');
+        if (kv[0] === 'u' && isValidUID(kv[1])) return kv[1];
+      }
     }
-    return uid;
-  } catch(e) {
-    return genUID(); // fallback if localStorage blocked
-  }
+  } catch (e) { /* silent */ }
+  return null;
 }
 
-// ── DATE HELPERS ──────────────────────────────────────────────
-function todayISO() {
-  var d = new Date();
-  return d.getFullYear() + '-'
-    + String(d.getMonth() + 1).padStart(2, '0') + '-'
-    + String(d.getDate()).padStart(2, '0');
+function readUIDFromStorage() {
+  var hashUID = readUIDFromHash();
+  if (hashUID) return hashUID;
+  try {
+    var val = localStorage.getItem(UID_KEY);
+    return isValidUID(val) ? val : null;
+  } catch (e) { return null; }
 }
 
-// ── LOCALSTORAGE (filters + auto-refresh only) ────────────────
+function persistUID(uid) {
+  if (!uid) return;
+  try {
+    var base = window.location.href.split('#')[0];
+    window.history.replaceState(null, '', base + '#u=' + uid);
+  } catch (e) { /* silent */ }
+  try { localStorage.setItem(UID_KEY, uid); } catch (e) { /* silent */ }
+}
+
+/**
+ * FIX #3: No dashes — backend strips them at mint time.
+ * Pattern must exactly match isValidUID_() in Code.gs.
+ */
+function isValidUID(uid) {
+  return typeof uid === 'string' && /^[a-zA-Z0-9]{16,64}$/.test(uid);
+}
+
+// =============================================================
+//  LOCAL STORAGE — UI preferences
+// =============================================================
 function saveFilters() {
-  try { localStorage.setItem('kw_filters', JSON.stringify(S.timeFilter)); } catch(e) {}
+  try { localStorage.setItem(FILTER_KEY, JSON.stringify(S.timeFilter)); } catch (e) {}
 }
 function loadFilters() {
-  try { var r = localStorage.getItem('kw_filters'); return r ? JSON.parse(r) : {}; } catch(e) { return {}; }
+  try {
+    var r = localStorage.getItem(FILTER_KEY);
+    if (!r) return {};
+    var p = JSON.parse(r);
+    return (p && typeof p === 'object' && !Array.isArray(p)) ? p : {};
+  } catch (e) { return {}; }
 }
-function saveARInterval(secs) {
-  try { localStorage.setItem('ar_interval', String(secs)); } catch(e) {}
+function saveAR(secs) {
+  try { localStorage.setItem(AR_KEY, String(parseInt(secs, 10) || 0)); } catch (e) {}
 }
-function loadARInterval() {
-  try { return parseInt(localStorage.getItem('ar_interval') || '0', 10); } catch(e) { return 0; }
+function loadAR() {
+  try { return Math.max(0, parseInt(localStorage.getItem(AR_KEY) || '0', 10)); } catch (e) { return 0; }
 }
 
-// ── INIT ──────────────────────────────────────────────────────
-window.onload = function() {
-  // Step 1: Get or create this browser's unique ID
-  S.uid = getOrCreateUID();
+// =============================================================
+//  DATE UTILS
+// =============================================================
+function todayISO() {
+  var d = new Date();
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+}
+function pad(n) { return n < 10 ? '0' + n : String(n); }
 
-  // Step 2: Load keywords from server using this UID
-  // Server returns ONLY this user's keywords — completely private
+// =============================================================
+//  INIT
+// =============================================================
+window.addEventListener('load', function() {
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) pauseAR(); else resumeAR();
+  });
+
+  var localID = readUIDFromStorage();
+
+  google.script.run
+    .withSuccessHandler(function(validUID) {
+      if (validUID) {
+        S.uid = validUID;
+        persistUID(validUID);
+        doLoadKeywords();
+      } else {
+        toast('⚠ Identity Error. Try refreshing.');
+      }
+    })
+    .withFailureHandler(function() {
+      toast('⚠ Server Connection Failed.');
+    })
+    .getOrCreateUID(localID);
+});
+
+function doLoadKeywords() {
+  if (!S.uid) return;
+  var savedFilters = loadFilters();
+
   google.script.run
     .withSuccessHandler(function(kws) {
-      S.keywords   = kws || [];
-      S.timeFilter = loadFilters();
+      S.keywords   = Array.isArray(kws) ? kws : [];
+      S.timeFilter = savedFilters;
+
       S.keywords.forEach(function(kw) {
         if (!S.timeFilter[kw]) S.timeFilter[kw] = 'today';
       });
-      render();
-      var saved = loadARInterval();
-      if (saved > 0) setAutoRefresh(saved);
-    })
-    .withFailureHandler(function(err) {
-      console.error('loadKeywords failed:', err);
-      render();
-    })
-    .loadKeywords(S.uid); // pass UID to server
-};
 
-// ── SAVE KEYWORDS TO SERVER ───────────────────────────────────
-function saveKw() {
-  google.script.run.saveKeywords(S.uid, S.keywords); // pass UID + keywords
+      S.ready = true;
+      render();
+
+      var ar = loadAR();
+      if (ar > 0) setAutoRefresh(ar);
+    })
+    .withFailureHandler(function() {
+      S.ready = true;
+      render();
+      toast('⚠ Could not load keywords.');
+    })
+    .loadKeywords(S.uid);
 }
 
-// ── STATIC LISTENERS ──────────────────────────────────────────
-document.getElementById('addBtn').onclick        = addKeyword;
-document.getElementById('refreshAllBtn').onclick = refreshAll;
-document.getElementById('clearAllBtn').onclick   = clearAll;
-document.getElementById('kwInput').onkeydown = function(e) {
-  if (e.key === 'Enter') addKeyword();
-};
+function serverSaveKw() {
+  if (!S.uid || !S.ready) return;
+  google.script.run
+    .withFailureHandler(function() {
+      toast('⚠ Could not save — check your connection.');
+    })
+    .saveKeywords(S.uid, S.keywords);
+}
 
-// ── AUTO-REFRESH ──────────────────────────────────────────────
-var AR = { intervalSec: 0, timerId: null, counterId: null, remaining: 0 };
+// =============================================================
+//  EVENT LISTENERS
+// =============================================================
+document.getElementById('addBtn').addEventListener('click', addKeyword);
+document.getElementById('refreshAllBtn').addEventListener('click', refreshAll);
+document.getElementById('clearAllBtn').addEventListener('click', clearAll);
+document.getElementById('kwInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') addKeyword();
+});
+
+document.getElementById('grid').addEventListener('click', function(e) {
+  var fb = e.target.closest('[data-filter-kw]');
+  if (fb) { onFilterClick(fb.dataset.filterKw, fb.dataset.filterVal); return; }
+  var rb = e.target.closest('[data-refresh-kw]');
+  if (rb) { onRefreshClick(rb.dataset.refreshKw); }
+});
+
+document.getElementById('pills').addEventListener('click', function(e) {
+  var b = e.target.closest('[data-remove-kw]');
+  if (b) removeKeyword(b.dataset.removeKw);
+});
+
+// =============================================================
+//  AUTO-REFRESH
+//  FIX #5: Track when page was hidden; recalculate remaining on
+//  resume so the countdown stays honest after a tab switch.
+// =============================================================
+var AR = {
+  secs:      0,
+  mainTimer: null,
+  tickTimer: null,
+  remaining: 0,
+  paused:    false,
+  hiddenAt:  0      // timestamp when tab was hidden
+};
 
 document.getElementById('arBtn').addEventListener('click', function(e) {
   e.stopPropagation();
-  document.getElementById('arDropdown').classList.toggle('open');
+  var dd   = document.getElementById('arDropdown');
+  var open = dd.classList.toggle('open');
+  this.setAttribute('aria-expanded', open ? 'true' : 'false');
 });
+
 document.addEventListener('click', function() {
-  document.getElementById('arDropdown').classList.remove('open');
+  var dd = document.getElementById('arDropdown');
+  if (dd.classList.contains('open')) {
+    dd.classList.remove('open');
+    document.getElementById('arBtn').setAttribute('aria-expanded', 'false');
+  }
 });
+
 document.getElementById('arDropdown').addEventListener('click', function(e) {
+  e.stopPropagation();
   var opt = e.target.closest('[data-interval]');
   if (!opt) return;
-  e.stopPropagation();
   setAutoRefresh(parseInt(opt.getAttribute('data-interval'), 10));
-  document.getElementById('arDropdown').classList.remove('open');
+  this.classList.remove('open');
+  document.getElementById('arBtn').setAttribute('aria-expanded', 'false');
 });
 
 function setAutoRefresh(secs) {
-  if (AR.timerId)   { clearInterval(AR.timerId);   AR.timerId   = null; }
-  if (AR.counterId) { clearInterval(AR.counterId); AR.counterId = null; }
-  AR.intervalSec = secs;
-  saveARInterval(secs);
+  clearARTimers();
+  AR.secs    = secs;
+  AR.paused  = false;
+  AR.hiddenAt = 0;
+  saveAR(secs);
+  updateARUI(secs);
+  if (secs <= 0) { toast('Auto refresh off'); return; }
+  startARTimers(secs);
+  var lbls = { 30: '30s', 60: '1 min', 300: '5 min', 600: '10 min' };
+  toast('Auto refresh every ' + (lbls[secs] || secs + 's') + ' — all topics');
+}
 
-  [0,30,60,300,600].forEach(function(v) {
-    var el  = document.getElementById('arCheck-' + v);
-    if (el) el.textContent = (v === secs) ? '✓' : '';
-    var row = document.querySelector('[data-interval="' + v + '"]');
-    if (row) row.classList.toggle('selected', v === secs);
-  });
+function startARTimers(secs) {
+  AR.remaining = secs;
+  updateCountdown();
 
+  AR.tickTimer = setInterval(function() {
+    if (AR.paused) return;
+    AR.remaining = Math.max(0, AR.remaining - 1);
+    updateCountdown();
+  }, 1000);
+
+  AR.mainTimer = setInterval(function() {
+    if (AR.paused) return;
+    AR.remaining = secs;
+    refreshAll();
+  }, secs * 1000);
+}
+
+function clearARTimers() {
+  if (AR.mainTimer) { clearInterval(AR.mainTimer); AR.mainTimer = null; }
+  if (AR.tickTimer) { clearInterval(AR.tickTimer); AR.tickTimer = null; }
+}
+
+function pauseAR() {
+  if (AR.paused) return;
+  AR.paused   = true;
+  AR.hiddenAt = Date.now();
+}
+
+/**
+ * FIX #5 (continued): Subtract real elapsed time from the remaining
+ * countdown so it's accurate after the tab was hidden for a while.
+ * If we're overdue, fire a refresh immediately and reset the cycle.
+ */
+function resumeAR() {
+  if (!AR.paused) return;
+  AR.paused = false;
+
+  if (AR.secs > 0 && AR.hiddenAt > 0) {
+    var elapsed   = Math.floor((Date.now() - AR.hiddenAt) / 1000);
+    AR.remaining  = AR.remaining - elapsed;
+    AR.hiddenAt   = 0;
+
+    if (AR.remaining <= 0) {
+      // Overdue — fire immediately then restart the full interval
+      AR.remaining = AR.secs;
+      refreshAll();
+    }
+    updateCountdown();
+  }
+}
+
+function updateCountdown() {
+  var el = document.getElementById('arCountdown');
+  if (el) el.textContent = fmtSec(AR.remaining);
+}
+
+function updateARUI(secs) {
   var btn       = document.getElementById('arBtn');
   var label     = document.getElementById('arLabel');
   var countdown = document.getElementById('arCountdown');
 
+  [0, 30, 60, 300, 600].forEach(function(v) {
+    var chk = document.getElementById('arCheck-' + v);
+    if (chk) chk.textContent = (v === secs) ? '✓' : '';
+    var row = document.querySelector('[data-interval="' + v + '"]');
+    if (row) {
+      row.classList.toggle('selected', v === secs);
+      row.setAttribute('aria-selected', v === secs ? 'true' : 'false');
+    }
+  });
+
   if (secs === 0) {
     btn.classList.remove('active');
-    label.textContent       = 'Auto Refresh';
+    label.textContent = 'Auto Refresh';
     countdown.style.display = 'none';
-    showToast('Auto refresh turned off');
-    return;
+  } else {
+    btn.classList.add('active');
+    label.textContent = 'Auto';
+    countdown.style.display = 'inline';
   }
-
-  btn.classList.add('active');
-  label.textContent       = 'Auto';
-  countdown.style.display = 'inline';
-  AR.remaining            = secs;
-  countdown.textContent   = fmtSec(secs);
-
-  AR.counterId = setInterval(function() {
-    AR.remaining--;
-    if (AR.remaining <= 0) AR.remaining = secs;
-    countdown.textContent = fmtSec(AR.remaining);
-  }, 1000);
-
-  AR.timerId = setInterval(function() {
-    AR.remaining = secs;
-    refreshAll();
-  }, secs * 1000);
-
-  var lbls = { 30:'30s', 60:'1 min', 300:'5 min', 600:'10 min' };
-  showToast('Auto refresh every ' + (lbls[secs] || secs + 's') + ' — all topics');
 }
 
 function fmtSec(s) {
-  if (s >= 60) { var m = Math.floor(s/60), r = s%60; return m+'m'+(r>0?' '+r+'s':''); }
-  return s+'s';
+  s = Math.max(0, Math.round(s));
+  if (s >= 60) {
+    var m = Math.floor(s / 60), r = s % 60;
+    return m + 'm' + (r > 0 ? ' ' + r + 's' : '');
+  }
+  return s + 's';
 }
 
-// ── DELEGATED CLICKS ──────────────────────────────────────────
-document.getElementById('grid').addEventListener('click', function(e) {
-  var fb = e.target.closest('[data-filter-kw]');
-  if (fb) { onFilterClick(fb.getAttribute('data-filter-kw'), fb.getAttribute('data-filter-val')); return; }
-  var rb = e.target.closest('[data-refresh-kw]');
-  if (rb) onRefreshClick(rb.getAttribute('data-refresh-kw'));
-});
-document.getElementById('pills').addEventListener('click', function(e) {
-  var b = e.target.closest('[data-remove-kw]');
-  if (b) removeKeyword(b.getAttribute('data-remove-kw'));
-});
-
-// ── FILTER ────────────────────────────────────────────────────
+// =============================================================
+//  FILTER
+// =============================================================
 function onFilterClick(kw, val) {
+  if (!kw || !val) return;
   if (S.timeFilter[kw] === val) return;
   S.timeFilter[kw] = val;
   S.offset[kw]     = 0;
   saveFilters();
   applyFilter(kw);
   renderCard(kw);
-  showToast(val === 'today' ? '⚡ Today\'s news only' : '🗓 Showing all available news');
+  toast(val === 'today' ? '⚡ Today\'s news only' : '🗓 All available news');
 }
 
+// =============================================================
+//  APPLY FILTER
+//  FIX #1: Replaced lookbehind (?<!...) with (^|[^a-zA-Z0-9])
+//  so it works on Safari / iOS < 16.4 which don't support ES2018
+//  lookbehind assertions.
+// =============================================================
 function applyFilter(kw) {
   var raw    = S.rawPool[kw];
   var filter = S.timeFilter[kw] || 'today';
 
-  if (!raw || !Array.isArray(raw)) { S.pool[kw] = raw; return; }
-
-  var kwLower = kw.replace(/^"|"$/g,'').trim().toLowerCase();
-  var words   = kwLower.split(/\s+/).filter(function(w){ return w.length > 0; });
-  var today   = todayISO();
-
-  var wordRegs = words.map(function(w) {
-    var safe = w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    return new RegExp('(?<![a-zA-Z0-9])' + safe + '(?![a-zA-Z0-9])', 'i');
-  });
-
-  function matches(title) {
-    return wordRegs.every(function(re){ return re.test(title); });
+  if (!raw || !Array.isArray(raw)) {
+    S.pool[kw] = raw;
+    return;
   }
 
-  var result = raw.filter(function(item) {
-    if (!matches(item.title)) return false;
+  var kwClean = kw.replace(/^"|"$/g, '').trim().toLowerCase();
+  var words   = kwClean.split(/\s+/).filter(function(w) { return w.length > 0; });
+  if (!words.length) { S.pool[kw] = raw; return; }
+
+  var today = todayISO();
+
+  // Word-boundary match without lookbehind:
+  //   (^|[^a-zA-Z0-9]) — start-of-string OR a non-alnum char before the word
+  //   ($|[^a-zA-Z0-9]) — end-of-string OR a non-alnum char after the word
+  // .test() is sufficient — we only need to know if the match exists.
+  var regs = words.map(function(w) {
+    return new RegExp('(^|[^a-zA-Z0-9])' + escRe(w) + '($|[^a-zA-Z0-9])', 'i');
+  });
+
+  function titleMatches(title) {
+    return regs.every(function(re) { return re.test(title); });
+  }
+
+  var matched = raw.filter(function(item) {
+    if (!titleMatches(item.title)) return false;
     if (filter === 'today') return item.isoDate === today;
     return true;
   });
 
-  if (!result.length) {
-    var anyDate = raw.filter(function(item){ return matches(item.title); });
-    S.pool[kw] = [];
-    S.pool[kw]._msg = filter === 'today'
-      ? '📭 No exact results for <strong>"' + esc(kw) + '"</strong> today.'
-        + (anyDate.length
-          ? ' <em>(' + anyDate.length + ' older article' + (anyDate.length>1?'s':'') + ' — try <strong>🗓 Anytime</strong>)</em>'
-          : ' <em>No results even for Anytime — keyword may be too specific.</em>')
-      : '📭 No exact results for <strong>"' + esc(kw) + '"</strong>. Try a broader keyword.';
+  if (!matched.length) {
+    var anytimeCount = (filter === 'today')
+      ? raw.filter(function(item) { return titleMatches(item.title); }).length
+      : 0;
+
+    var msg;
+    if (filter === 'today') {
+      msg = '📭 No exact results for <strong>"' + esc(kw) + '"</strong> today.';
+      if (anytimeCount > 0) {
+        msg += ' <em>(' + anytimeCount + ' older article'
+          + (anytimeCount > 1 ? 's' : '')
+          + ' available — try <strong>🗓 Anytime</strong>)</em>';
+      } else {
+        msg += ' <em>No results for any date. Try a broader keyword.</em>';
+      }
+    } else {
+      msg = '📭 No exact results for <strong>"' + esc(kw) + '"</strong>. Try a broader keyword.';
+    }
+
+    // Store as array so downstream isArr checks stay consistent;
+    // _msg is a custom property on the array object for the message.
+    S.pool[kw]      = [];
+    S.pool[kw]._msg = msg;
   } else {
-    S.pool[kw] = result;
+    S.pool[kw] = matched;
   }
 }
 
-// ── REFRESH ───────────────────────────────────────────────────
+// =============================================================
+//  REFRESH
+// =============================================================
 function onRefreshClick(kw) {
-  var pool   = S.pool[kw]   || [];
+  if (!kw) return;
+  var pool   = S.pool[kw];
   var offset = S.offset[kw] || 0;
-  if (Array.isArray(pool) && offset + PAGE < pool.length) {
+
+  if (Array.isArray(pool) && (offset + PAGE) < pool.length) {
     S.offset[kw] = offset + PAGE;
     renderCard(kw);
-    showToast('Showing ' + (offset+PAGE+1) + '–' + Math.min(offset+PAGE+PAGE, pool.length));
+    var from = offset + PAGE + 1;
+    var to   = Math.min(offset + PAGE + PAGE, pool.length);
+    toast('Showing ' + from + '–' + to);
   } else {
-    showToast('Fetching fresh articles…');
     fetchServer(kw);
   }
 }
 
-function refreshAll() { S.keywords.forEach(fetchServer); }
+/**
+ * FIX #6: Guard against refreshAll firing before init is complete.
+ */
+function refreshAll() {
+  if (!S.ready || !S.keywords.length) return;
+  S.keywords.forEach(fetchServer);
+}
 
+// =============================================================
+//  SERVER FETCH
+//  FIX #2: Removed the fragile client-side isoDate re-derivation.
+//  The server already sends isoDate in yyyy-MM-dd format — trust it.
+//  new Date("23 Mar 2026, 14:30") is non-standard and fails in some
+//  browser/locale combinations.
+// =============================================================
 function fetchServer(kw) {
+  if (!kw || S.loading[kw]) return;
   S.loading[kw] = true;
   renderCard(kw);
 
   google.script.run
     .withSuccessHandler(function(data) {
       S.loading[kw] = false;
-      if (data && data.error)          { S.rawPool[kw] = { _err: data.error }; }
-      else if (data && data.noResults) { S.rawPool[kw] = { _msg: '📭 ' + esc(data.message) }; }
-      else                             { S.rawPool[kw] = Array.isArray(data) ? data : []; }
+
+      if (data && data.error) {
+        S.rawPool[kw] = { _err: data.error };
+      } else if (data && data.noResults) {
+        S.rawPool[kw] = { _msg: '📭 No results found for this topic.' };
+      } else if (Array.isArray(data) && data.length > 0) {
+        // isoDate is already set by the server in yyyy-MM-dd format.
+        // Sanitise just in case a field is missing — no re-parsing needed.
+        data.forEach(function(item) {
+          if (typeof item.isoDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(item.isoDate)) {
+            item.isoDate = '';
+          }
+        });
+        S.rawPool[kw] = data;
+      } else {
+        S.rawPool[kw] = { _msg: '📭 No articles returned. Try again later.' };
+      }
+
       S.offset[kw] = 0;
       applyFilter(kw);
-      document.getElementById('lastRefresh').textContent =
-        'refreshed ' + new Date().toLocaleTimeString();
+
+      var lr = document.getElementById('lastRefresh');
+      if (lr) lr.textContent = 'refreshed ' + new Date().toLocaleTimeString();
+
       renderCard(kw);
     })
-    .withFailureHandler(function(err) {
+    .withFailureHandler(function() {
       S.loading[kw] = false;
-      S.rawPool[kw] = { _err: err.message || 'Unknown error' };
+      S.rawPool[kw] = { _err: 'Server connection failed.' };
       S.pool[kw]    = S.rawPool[kw];
       S.offset[kw]  = 0;
       renderCard(kw);
@@ -607,22 +931,30 @@ function fetchServer(kw) {
     .fetchNews(kw);
 }
 
-// ── RENDER ────────────────────────────────────────────────────
+// =============================================================
+//  RENDER
+// =============================================================
 function render() {
-  document.getElementById('pills').innerHTML = S.keywords.map(function(kw){
-    return '<div class="pill"><span>'+esc(kw)+'</span>'
-      +'<button class="pill-x" data-remove-kw="'+esc(kw)+'" title="Remove">✕</button></div>';
+  var pillsEl = document.getElementById('pills');
+  pillsEl.innerHTML = S.keywords.map(function(kw) {
+    return '<div class="pill">'
+      + '<span title="' + esc(kw) + '">' + esc(kw) + '</span>'
+      + '<button class="pill-x" data-remove-kw="' + esc(kw)
+      + '" aria-label="Remove ' + esc(kw) + '">&#10005;</button>'
+      + '</div>';
   }).join('');
 
-  document.getElementById('actionsBar').style.display = S.keywords.length ? 'flex' : 'none';
+  document.getElementById('actionsBar').style.display =
+    S.keywords.length ? 'flex' : 'none';
 
   var g = document.getElementById('grid');
   if (!S.keywords.length) {
-    g.innerHTML = '<div class="empty"><div class="ico">🔍</div><div>Add a keyword above to start tracking news</div></div>';
+    g.innerHTML = '<div class="empty"><div class="ico">🔍</div>'
+      + '<div>Add a keyword above to start tracking news</div></div>';
     return;
   }
-  g.innerHTML = S.keywords.map(function(kw){
-    return '<div id="'+cardId(kw)+'">'+buildCard(kw)+'</div>';
+  g.innerHTML = S.keywords.map(function(kw) {
+    return '<div id="' + cardId(kw) + '">' + buildCard(kw) + '</div>';
   }).join('');
 }
 
@@ -632,11 +964,13 @@ function renderCard(kw) {
   el.innerHTML = buildCard(kw);
 }
 
-// ── BUILD CARD ────────────────────────────────────────────────
+// =============================================================
+//  BUILD CARD
+// =============================================================
 function buildCard(kw) {
   var pool    = S.pool[kw];
   var offset  = S.offset[kw] || 0;
-  var loading = S.loading[kw];
+  var loading = !!S.loading[kw];
   var filter  = S.timeFilter[kw] || 'today';
   var isArr   = Array.isArray(pool);
   var total   = isArr ? pool.length : 0;
@@ -644,45 +978,57 @@ function buildCard(kw) {
   var hasMore = isArr && (offset + PAGE) < pool.length;
 
   var countLabel = (total > 0 && !loading)
-    ? '<span class="kw-count">'+(offset+1)+'–'+pageEnd+' / '+total+'</span>' : '';
+    ? '<span class="kw-count">' + (offset + 1) + '–' + pageEnd + ' / ' + total + '</span>'
+    : '';
 
   var top = '<div class="card-top">'
-    + '<span class="kw-badge">'+esc(kw)+'</span>'
+    + '<span class="kw-badge" title="' + esc(kw) + '">' + esc(kw) + '</span>'
     + countLabel
     + '<span class="exact-tag">Exact</span>'
-    + '<button class="btn btn-ghost btn-sm card-refresh" data-refresh-kw="'+esc(kw)+'">↻</button>'
+    + '<button class="btn btn-ghost btn-sm" data-refresh-kw="' + esc(kw)
+    + '" aria-label="Refresh ' + esc(kw) + '">↻</button>'
     + '</div>';
 
-  var filterBar = '<div class="filter-bar">'
-    + '<button data-filter-kw="'+esc(kw)+'" data-filter-val="today"'
-    + (filter==='today' ? ' class="active"' : '')+'>⚡ As it Happens</button>'
-    + '<button data-filter-kw="'+esc(kw)+'" data-filter-val="anytime"'
-    + (filter==='anytime' ? ' class="active"' : '')+'>🗓 Anytime</button>'
+  var fbar = '<div class="filter-bar" role="group" aria-label="Time filter">'
+    + '<button data-filter-kw="' + esc(kw) + '" data-filter-val="today"'
+    + (filter === 'today'   ? ' class="active" aria-pressed="true"'  : ' aria-pressed="false"')
+    + '>⚡ As it Happens</button>'
+    + '<button data-filter-kw="' + esc(kw) + '" data-filter-val="anytime"'
+    + (filter === 'anytime' ? ' class="active" aria-pressed="true"'  : ' aria-pressed="false"')
+    + '>🗓 Anytime</button>'
     + '</div>';
 
-  var body = '';
-  var kwClean = kw.replace(/^"|"$/g,'').trim();
+  var body    = '';
+  var kwClean = kw.replace(/^"|"$/g, '').trim();
 
   if (loading) {
-    body = '<div class="spin-row"><div class="spin"></div>Fetching "'+esc(kw)+'"…</div>';
+    body = '<div class="spin-row"><div class="spin" aria-hidden="true"></div>Fetching "'
+      + esc(kw) + '"…</div>';
   } else if (!pool) {
     body = '<div class="msg">Click <strong>↻</strong> to fetch news.</div>';
   } else if (pool._err) {
-    body = '<div class="msg-err">⚠ '+esc(pool._err)+'</div>';
+    body = '<div class="msg-err">⚠ ' + esc(pool._err) + '</div>';
   } else if (pool._msg) {
-    body = '<div class="msg">'+pool._msg+'</div>';
+    // _msg may come from the server (plain object) or from applyFilter
+    // (custom property on a [] array). Both are handled here.
+    body = '<div class="msg">' + pool._msg + '</div>';
   } else if (!total) {
     body = '<div class="msg">No articles to show.</div>';
   } else {
     var slice = pool.slice(offset, offset + PAGE);
     body = '<div class="articles">'
-      + slice.map(function(item, i){
+      + slice.map(function(item, i) {
+          var safeURL = /^https?:\/\//i.test(item.url || '') ? item.url : '#';
           return '<div class="article">'
-            +'<div class="art-meta">'+esc(item.source)+(item.date?' · '+esc(item.date):'')+'</div>'
-            +'<div class="art-title">'+hlWord(item.title, kwClean)
-            +(i===0 && offset===0 ? '<span class="badge-latest">Latest</span>' : '')+'</div>'
-            +'<div class="art-link"><a href="'+esc(item.url)+'" target="_blank" rel="noopener">Read ↗</a></div>'
-            +'</div>';
+            + '<div class="art-meta">'
+            + esc(item.source) + (item.date ? ' · ' + esc(item.date) : '')
+            + '</div>'
+            + '<div class="art-title">' + hlWord(item.title, kwClean)
+            + (i === 0 && offset === 0 ? '<span class="badge-latest">Latest</span>' : '')
+            + '</div>'
+            + '<div class="art-link"><a href="' + esc(safeURL)
+            + '" target="_blank" rel="noopener noreferrer">Read ↗</a></div>'
+            + '</div>';
         }).join('')
       + '</div>';
   }
@@ -690,76 +1036,165 @@ function buildCard(kw) {
   var foot = '';
   if (isArr && total > 0 && !loading) {
     foot = '<div class="card-foot">'
-      +(hasMore ? '<span>'+(total-pageEnd)+' more in pool</span>' : '<span>End of pool</span>')
-      +'<span>'+pageEnd+' / '+total+'</span>'
-      +'</div>';
+      + (hasMore
+          ? '<span>' + (total - pageEnd) + ' more in pool</span>'
+          : '<span>End of pool</span>')
+      + '<span>' + pageEnd + ' / ' + total + '</span>'
+      + '</div>';
   }
 
-  return '<div class="card">'+top+filterBar+body+foot+'</div>';
+  return '<div class="card">' + top + fbar + body + foot + '</div>';
 }
 
-// ── HIGHLIGHT ─────────────────────────────────────────────────
+// =============================================================
+//  HIGHLIGHT
+//  FIX #1 (continued): Same lookbehind replacement as applyFilter.
+//  Approach: capture the preceding non-alnum char in group 1 so we
+//  can re-emit it unchanged, then slot-protect the matched word.
+//  After HTML-escaping the full string, the \x01N\x01 placeholders
+//  are untouched (they contain no HTML special chars) and are then
+//  swapped for <mark>…</mark> wrapping the escaped original word.
+// =============================================================
 function hlWord(title, kw) {
-  var words = kw.trim().split(/\s+/);
+  if (!title || !kw) return esc(title || '');
+
+  var words  = kw.trim().split(/\s+/).filter(function(w) { return w.length > 0; });
   var result = title;
-  var placeholders = [];
+  var slots  = [];
+
   words.forEach(function(w) {
-    if (!w) return;
-    var safe = w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    var re   = new RegExp('(?<![a-zA-Z0-9])('+safe+')(?![a-zA-Z0-9])','gi');
-    result = result.replace(re, function(match) {
-      var idx = placeholders.length;
-      placeholders.push(match);
-      return '\x00'+idx+'\x00';
+    // Group 1: non-alnum char (or start-of-string via ^) before the word
+    // Group 2: the word itself
+    // Lookahead: non-alnum char (or end-of-string) after the word
+    var re = new RegExp(
+      '(^|[^a-zA-Z0-9])(' + escRe(w) + ')(?![a-zA-Z0-9])',
+      'gi'
+    );
+    result = result.replace(re, function(match, prefix, word) {
+      var idx = slots.length;
+      slots.push(word);
+      // Re-emit the boundary character (prefix) intact, protect the word
+      return prefix + '\x01' + idx + '\x01';
     });
   });
+
+  // Escape ALL remaining HTML special chars (prefix chars like & < > are safe now)
   result = esc(result);
-  placeholders.forEach(function(original, idx) {
-    result = result.split('\x00'+idx+'\x00').join('<mark>'+esc(original)+'</mark>');
+
+  // Swap placeholders for <mark> tags. The stored word is also escaped.
+  slots.forEach(function(original, idx) {
+    result = result.split('\x01' + idx + '\x01').join(
+      '<mark>' + esc(original) + '</mark>'
+    );
   });
+
   return result;
 }
 
-// ── KEYWORD CRUD ──────────────────────────────────────────────
+// =============================================================
+//  KEYWORD CRUD
+// =============================================================
 function addKeyword() {
+  if (!S.ready) { toast('Loading… please wait.'); return; }
+
   var inp = document.getElementById('kwInput');
-  var kw  = inp.value.trim();
-  if (!kw) return;
-  if (S.keywords.indexOf(kw) !== -1) { showToast('Already tracking this keyword'); inp.value=''; return; }
+  var kw  = inp.value.replace(/[\x00-\x1F\x7F]/g, '').trim().slice(0, MAX_KW_LEN);
+
+  if (!kw) { inp.value = ''; return; }
+
+  if (S.keywords.length >= MAX_KW) {
+    toast('⚠ Maximum ' + MAX_KW + ' keywords allowed.');
+    inp.value = '';
+    return;
+  }
+
+  var dup = S.keywords.some(function(k) {
+    return k.toLowerCase() === kw.toLowerCase();
+  });
+  if (dup) { toast('Already tracking "' + kw + '"'); inp.value = ''; return; }
+
   S.keywords.push(kw);
   S.timeFilter[kw] = 'today';
   inp.value = '';
-  saveKw(); saveFilters(); render();
+  serverSaveKw();
+  saveFilters();
+  render();
 }
 
 function removeKeyword(kw) {
-  S.keywords = S.keywords.filter(function(k){ return k!==kw; });
-  delete S.rawPool[kw]; delete S.pool[kw];
-  delete S.offset[kw];  delete S.timeFilter[kw];
-  saveKw(); saveFilters(); render();
+  if (!kw) return;
+  S.keywords = S.keywords.filter(function(k) { return k !== kw; });
+  delete S.rawPool[kw];
+  delete S.pool[kw];
+  delete S.offset[kw];
+  delete S.timeFilter[kw];
+  delete S.loading[kw];
+  serverSaveKw();
+  saveFilters();
+  render();
 }
 
 function clearAll() {
+  if (!S.keywords.length) return;
   if (!confirm('Remove all keywords?')) return;
-  S.keywords=[]; S.rawPool={}; S.pool={}; S.offset={}; S.timeFilter={};
+  S.keywords   = [];
+  S.rawPool    = {};
+  S.pool       = {};
+  S.offset     = {};
+  S.timeFilter = {};
+  S.loading    = {};
   setAutoRefresh(0);
-  saveKw(); saveFilters(); render();
+  serverSaveKw();
+  saveFilters();
+  render();
 }
 
-// ── UTILS ─────────────────────────────────────────────────────
-function cardId(kw) { return 'c-'+btoa(unescape(encodeURIComponent(kw))); }
+// =============================================================
+//  UTILS
+// =============================================================
+function cardId(kw) {
+  try {
+    return 'c' + btoa(unescape(encodeURIComponent(kw))).replace(/[^a-zA-Z0-9]/g, '_');
+  } catch (e) {
+    return 'c' + Math.abs(hashCode(kw));
+  }
+}
 
+function hashCode(str) {
+  var h = 0;
+  for (var i = 0; i < str.length; i++) {
+    h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+  }
+  return h;
+}
+
+// XSS-safe HTML escaping
 function esc(s) {
-  return String(s||'')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s == null ? '' : s)
+    .replace(/&/g,  '&amp;')
+    .replace(/</g,  '&lt;')
+    .replace(/>/g,  '&gt;')
+    .replace(/"/g,  '&quot;')
+    .replace(/'/g,  '&#39;');
 }
 
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+// Regex-safe escaping
+function escRe(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+// Toast notification
+var toastTimer = null;
+function toast(msg) {
+  var el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { el.classList.remove('show'); }, 2600);
+}
+
+})();
 </script>
 </body>
 </html>
